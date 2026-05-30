@@ -27,6 +27,10 @@ const RegisterPage = () => {
   async function onSubmit(data: RegisterFormData) {
     try {
       const response = await registerMutation.mutateAsync({ data: { email: data.email, name: data.displayName, password: data.password } })
+      if (!response?.access_token || !response?.expires_in) {
+        setError("root", { message: "Invalid response from server" })
+        return
+      }
       setAccessToken(response.access_token, response.expires_in)
       navigate("/dashboard")
     } catch (err) {

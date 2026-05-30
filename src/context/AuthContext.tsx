@@ -1,0 +1,89 @@
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
+import { apiClient } from "@/api/client"
+import { setTokens, setAccessToken, clearTokens, hasTokens, getAccessToken } from "@/utils/token"
+import type { UserResponse, RegisterRequest } from "@/api/generated"
+
+interface AuthContextValue {
+  user: UserResponse | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, displayName: string) => Promise<void>
+  logout: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null)
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<UserResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function init() {
+      if (!hasTokens()) {
+        setIsLoading(false)
+        return
+      }
+      try {
+        const user = await apiClient<UserResponse>("/api/auth/me")
+        if (!cancelled) setUser(user)
+      } catch {
+        clearTokens()
+      }
+      if (!cancelled) setIsLoading(false)
+    }
+
+    init()
+    return () => { cancelled = true }
+  }, [])
+
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await apiClient<{ access_token: string; refresh_token: string; expires_in: number; user: UserResponse }>("/api/auth/login", {
+      method: "POST",
+      body: { email, password },
+      skipAuth: true,
+    })
+    setTokens(response.access_token, response.refresh_token, response.expires_in)
+    setUser(response.user)
+  }, [])
+
+  const register = useCallback(async (email: string, password: string, displayName: string) => {
+    const response = await apiClient<{ access_token: string; expires_in: number; user: UserResponse }>("/api/auth/register", {
+      method: "POST",
+      body: { email, password, name: displayName } as RegisterRequest,
+      skipAuth: true,
+    })
+    setAccessToken(response.access_token, response.expires_in)
+    setUser(response.user)
+  }, [])
+
+  const logout = useCallback(async () => {
+    const token = getAccessToken()
+    if (token) {
+      try { await apiClient("/api/auth/logout", { method: "POST", body: { access_token: token } }) } catch { /* ignore */ }
+    }
+    clearTokens()
+    setUser(null)
+  }, [])
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: user !== null,
+      isLoading,
+      login,
+      register,
+      logout,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider")
+  return ctx
+}
