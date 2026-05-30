@@ -31,6 +31,13 @@ export interface UserResponse {
   name: string;
 }
 
+export interface RegisterResponse {
+  access_token: string;
+  /** @minimum 0 */
+  expires_in: number;
+  user: UserResponse;
+}
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -43,9 +50,9 @@ export const getRegisterUrl = () => {
   return `/auth/register`
 }
 
-export const register = async (registerRequest: RegisterRequest, options?: RequestInit): Promise<UserResponse> => {
+export const register = async (registerRequest: RegisterRequest, options?: RequestInit): Promise<RegisterResponse> => {
 
-  return customFetch<UserResponse>(getRegisterUrl(),
+  return customFetch<RegisterResponse>(getRegisterUrl(),
   {
     ...options,
     method: 'POST',

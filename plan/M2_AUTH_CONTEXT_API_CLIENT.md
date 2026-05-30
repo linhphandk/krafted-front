@@ -614,3 +614,17 @@ After completing all tasks, you should be able to:
 7. After login, `getAccessToken()` returns a non-null token
 8. API calls via `apiClient` include the `Authorization: Bearer <token>` header
 9. When token expires, `apiClient` automatically refreshes and retries
+
+---
+
+## Task 8 — Updated Register endpoint (RegisterResponse)
+
+**Status**: Backend updated. Register now returns `{ user, access_token, expires_in }` instead of just `UserResponse`.
+
+**Changes needed**:
+- Regenerate API client from updated OpenAPI spec
+- Update RegisterPage to save `access_token` from response (no `refresh_token` yet — backend TBD)
+- Redirect to `/dashboard` on success (not `/login`)
+- Token storage via `src/utils/token.ts` (to be created)
+
+**Note**: `refresh_token` not yet in register response. Will be added when backend implements `/api/auth/refresh`. For now, only store `access_token` and `expires_in`.
