@@ -11,7 +11,7 @@ interface RegisterFormData {
   confirmPassword: string
 }
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   const {
     register,
     handleSubmit,
@@ -101,3 +101,5 @@ export default function RegisterPage() {
     </Box>
   )
 }
+
+export default RegisterPage

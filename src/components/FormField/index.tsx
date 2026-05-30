@@ -6,7 +6,7 @@ interface FormFieldProps {
   children: React.ReactElement<typeof TextField.Root>
 }
 
-export default function FormField({ label, error, children }: FormFieldProps) {
+const FormField = ({ label, error, children }: FormFieldProps) => {
   return (
     <Box>
       <Text as="label" size="2" weight="medium">{label}</Text>
@@ -17,3 +17,5 @@ export default function FormField({ label, error, children }: FormFieldProps) {
     </Box>
   )
 }
+
+export default FormField

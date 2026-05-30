@@ -57,6 +57,11 @@
 - Types: `camelCase.ts` (e.g., `auth.ts`, `user.ts`, `role.ts`)
 - Test files: `PascalCase.test.tsx` co-located or `__tests__/PascalCase.test.tsx`
 
+## Component Style
+
+- Use `const ComponentName = () => { ... }` + `export default ComponentName`
+- Never use `export default function ComponentName()`
+
 ## Styling
 
 - Use Radix UI components (`<Button>`, `<Card>`, `<TextField.Root>`, etc.) as primary building blocks
