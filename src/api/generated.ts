@@ -14,13 +14,15 @@ import type {
   UseMutationResult
 } from '@tanstack/react-query';
 
-export interface CreateUserRequest {
-  email: string;
-  name: string;
-}
-
+import { customFetch } from './custom-fetch';
 export interface ErrorResponse {
   message: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  name: string;
+  password: string;
 }
 
 export interface UserResponse {
@@ -29,53 +31,50 @@ export interface UserResponse {
   name: string;
 }
 
-export const getCreateUserUrl = () => {
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
+export const getRegisterUrl = () => {
 
 
 
 
-  return `/users`
+  return `/auth/register`
 }
 
-export const createUser = async (createUserRequest: CreateUserRequest, options?: RequestInit): Promise<UserResponse> => {
+export const register = async (registerRequest: RegisterRequest, options?: RequestInit): Promise<UserResponse> => {
 
-  const res = await fetch(getCreateUserUrl(),
+  return customFetch<UserResponse>(getRegisterUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createUserRequest)
+    body: JSON.stringify(registerRequest)
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: UserResponse = body ? JSON.parse(body) : {}
-  return data
-}
+);}
 
 
 
 
-export const getCreateUserMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, fetch?: RequestInit}
-): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext> => {
+export const getRegisterMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterRequest}, TContext> => {
 
-const mutationKey = ['createUser'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const mutationKey = ['register'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUser>>, {data: CreateUserRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof register>>, {data: RegisterRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  createUser(data,fetchOptions)
+          return  register(data,requestOptions)
         }
 
 
@@ -85,17 +84,17 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateUserMutationResult = NonNullable<Awaited<ReturnType<typeof createUser>>>
-    export type CreateUserMutationBody = CreateUserRequest
-    export type CreateUserMutationError = ErrorResponse
+    export type RegisterMutationResult = NonNullable<Awaited<ReturnType<typeof register>>>
+    export type RegisterMutationBody = RegisterRequest
+    export type RegisterMutationError = ErrorResponse
 
-    export const useCreateUser = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, fetch?: RequestInit}
+    export const useRegister = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createUser>>,
+        Awaited<ReturnType<typeof register>>,
         TError,
-        {data: CreateUserRequest},
+        {data: RegisterRequest},
         TContext
       > => {
-      return useMutation(getCreateUserMutationOptions(options), queryClient);
+      return useMutation(getRegisterMutationOptions(options), queryClient);
     }
