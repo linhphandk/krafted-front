@@ -2,18 +2,19 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Login", () => {
   test("shows login form and submits", async ({ page }) => {
-    await page.route("**/api/auth/login", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          access_token: "mock-access-token",
-          refresh_token: "mock-refresh-token",
-          expires_in: 3600,
-          user: { id: "1", email: "test@example.com", display_name: "Test User" },
-        }),
-      })
-    })
+    const email = `login-test-${Date.now()}@example.com`
+    const password = "password123"
+
+    await page.goto("/register")
+    await page.getByPlaceholder("Jane Doe").fill("Test User")
+    await page.getByPlaceholder("you@example.com").fill(email)
+    await page.getByPlaceholder("••••••••").first().fill(password)
+    await page.getByPlaceholder("••••••••").last().fill(password)
+    await page.getByRole("button", { name: "Create account" }).click()
+    await expect(page).toHaveURL(/dashboard/)
+
+    await page.context().clearCookies()
+    await page.evaluate(() => localStorage.clear())
 
     await page.goto("/login")
 
@@ -22,8 +23,8 @@ test.describe("Login", () => {
     await expect(page.getByPlaceholder("••••••••")).toBeVisible()
     await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible()
 
-    await page.getByPlaceholder("you@example.com").fill("test@example.com")
-    await page.getByPlaceholder("••••••••").fill("password123")
+    await page.getByPlaceholder("you@example.com").fill(email)
+    await page.getByPlaceholder("••••••••").fill(password)
 
     await page.getByRole("button", { name: "Sign in" }).click()
 
@@ -57,21 +58,13 @@ test.describe("Login", () => {
   })
 
   test("shows server error when login fails", async ({ page }) => {
-    await page.route("**/api/auth/login", async (route) => {
-      await route.fulfill({
-        status: 401,
-        contentType: "application/json",
-        body: JSON.stringify({ error: "Invalid credentials" }),
-      })
-    })
-
     await page.goto("/login")
 
-    await page.getByPlaceholder("you@example.com").fill("test@example.com")
+    await page.getByPlaceholder("you@example.com").fill("nonexistent@example.com")
     await page.getByPlaceholder("••••••••").fill("wrongpassword")
     await page.getByRole("button", { name: "Sign in" }).click()
 
-    await expect(page.getByText("Invalid credentials")).toBeVisible()
+    await expect(page.getByText(/login failed|invalid credentials/i)).toBeVisible()
   })
 
   test("redirects to register link", async ({ page }) => {
