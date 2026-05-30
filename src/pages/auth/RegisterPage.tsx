@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link } from "react-router"
 import { useForm } from "react-hook-form"
 import { Box, Card, TextField, Button, Text, Flex, Heading, Callout } from "@radix-ui/themes"
+import FormField from "@/components/FormField"
 
 interface RegisterFormData {
   displayName: string
@@ -43,19 +44,14 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Flex direction="column" gap="3">
-              <Box>
-                <Text as="label" size="2" weight="medium">Display name</Text>
+              <FormField label="Display name" error={errors.displayName?.message}>
                 <TextField.Root
                   placeholder="Jane Doe"
                   {...register("displayName", { required: "Display name is required" })}
                 />
-                {errors.displayName && (
-                  <Text size="1" color="red">{errors.displayName.message}</Text>
-                )}
-              </Box>
+              </FormField>
 
-              <Box>
-                <Text as="label" size="2" weight="medium">Email</Text>
+              <FormField label="Email" error={errors.email?.message}>
                 <TextField.Root
                   placeholder="you@example.com"
                   type="email"
@@ -64,13 +60,9 @@ export default function RegisterPage() {
                     pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email address" },
                   })}
                 />
-                {errors.email && (
-                  <Text size="1" color="red">{errors.email.message}</Text>
-                )}
-              </Box>
+              </FormField>
 
-              <Box>
-                <Text as="label" size="2" weight="medium">Password</Text>
+              <FormField label="Password" error={errors.password?.message}>
                 <TextField.Root
                   placeholder="••••••••"
                   type="password"
@@ -79,13 +71,9 @@ export default function RegisterPage() {
                     minLength: { value: 8, message: "Password must be at least 8 characters" },
                   })}
                 />
-                {errors.password && (
-                  <Text size="1" color="red">{errors.password.message}</Text>
-                )}
-              </Box>
+              </FormField>
 
-              <Box>
-                <Text as="label" size="2" weight="medium">Confirm password</Text>
+              <FormField label="Confirm password" error={errors.confirmPassword?.message}>
                 <TextField.Root
                   placeholder="••••••••"
                   type="password"
@@ -94,10 +82,7 @@ export default function RegisterPage() {
                     validate: (value) => value === getValues("password") || "Passwords do not match",
                   })}
                 />
-                {errors.confirmPassword && (
-                  <Text size="1" color="red">{errors.confirmPassword.message}</Text>
-                )}
-              </Box>
+              </FormField>
 
               <Button type="submit" loading={isSubmitting} size="3">
                 Create account
