@@ -2,6 +2,18 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Register", () => {
   test("shows register form and submits", async ({ page }) => {
+    await page.route("**/api/auth/register", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          access_token: "mock-access-token",
+          expires_in: 3600,
+          user: { id: "1", email: "test@example.com", display_name: "Test User" },
+        }),
+      })
+    })
+
     await page.goto("/register")
 
     await expect(page.getByRole("heading", { name: "Create account" })).toBeVisible()

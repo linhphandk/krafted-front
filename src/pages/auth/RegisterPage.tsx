@@ -34,7 +34,7 @@ const RegisterPage = () => {
       setAccessToken(response.access_token, response.expires_in)
       navigate("/dashboard")
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Registration failed"
+      const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Registration failed"
       setError("root", { message })
     }
   }

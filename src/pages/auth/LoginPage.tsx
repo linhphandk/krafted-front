@@ -25,7 +25,7 @@ const LoginPage = () => {
       await login(data.email, data.password)
       navigate("/dashboard")
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed"
+      const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Login failed"
       setError("root", { message })
     }
   }
