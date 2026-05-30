@@ -1,5 +1,12 @@
-function App() {
-  return <div>Krafted</div>
-}
+import { BrowserRouter, Routes, Route } from "react-router"
+import RegisterPage from "./pages/auth/RegisterPage"
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}

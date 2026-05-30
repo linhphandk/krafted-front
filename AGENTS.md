@@ -4,6 +4,7 @@
 
 - Always use caveman mode (bone intensity). No filler, no hedging, fragments OK.
 - Always open a pull request instead of committing directly to main.
+- Always check what needs to be done and give a summary before starting work. Never start coding immediately.
 
 ## Stack
 
@@ -55,6 +56,11 @@
 - API modules: `camelCase.ts` (e.g., `auth.ts`, `users.ts`)
 - Types: `camelCase.ts` (e.g., `auth.ts`, `user.ts`, `role.ts`)
 - Test files: `PascalCase.test.tsx` co-located or `__tests__/PascalCase.test.tsx`
+
+## Component Style
+
+- Use `const ComponentName = () => { ... }` + `export default ComponentName`
+- Never use `export default function ComponentName()`
 
 ## Styling
 
