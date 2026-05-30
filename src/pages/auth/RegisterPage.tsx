@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { Box, Card, TextField, Button, Text, Flex, Heading, Callout } from "@radix-ui/themes"
+import { useRegister } from "@/api/generated"
 import FormField from "@/components/FormField"
 
 interface RegisterFormData {
@@ -12,23 +12,28 @@ interface RegisterFormData {
 }
 
 const RegisterPage = () => {
+  const navigate = useNavigate()
+  const registerMutation = useRegister()
+
   const {
     register,
     handleSubmit,
     getValues,
     formState: { errors, isSubmitting },
+    setError,
   } = useForm<RegisterFormData>({ mode: "onChange" })
 
-  const [error, setError] = useState<string | null>(null)
-
-  async function onSubmit() {
-    setError(null)
+  async function onSubmit(data: RegisterFormData) {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    } catch {
-      setError("Registration failed")
+      await registerMutation.mutateAsync({ data: { email: data.email, name: data.displayName, password: data.password } })
+      navigate("/login")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Registration failed"
+      setError("root", { message })
     }
   }
+
+  const serverError = errors.root?.message
 
   return (
     <Box style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
@@ -36,9 +41,9 @@ const RegisterPage = () => {
         <Flex direction="column" gap="4" p="4">
           <Heading size="5" align="center">Create account</Heading>
 
-          {error && (
+          {serverError && (
             <Callout.Root color="red" size="1">
-              <Callout.Text>{error}</Callout.Text>
+              <Callout.Text>{serverError}</Callout.Text>
             </Callout.Root>
           )}
 
@@ -84,7 +89,7 @@ const RegisterPage = () => {
                 />
               </FormField>
 
-              <Button type="submit" loading={isSubmitting} size="3">
+              <Button type="submit" loading={isSubmitting || registerMutation.isPending} size="3">
                 Create account
               </Button>
             </Flex>
