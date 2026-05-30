@@ -11,6 +11,10 @@ export default defineConfig({
         fetch: {
           includeHttpResponseReturnType: false,
         },
+        mutator: {
+          path: "./src/api/custom-fetch.ts",
+          name: "customFetch",
+        },
         operations: {
           create_user: {
             mutation: true,
