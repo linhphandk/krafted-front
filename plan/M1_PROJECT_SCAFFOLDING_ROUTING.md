@@ -41,7 +41,7 @@ The project is already scaffolded with Vite. Verify the following are in place:
 ```
 
 `tsconfig.app.json` must have path aliases:
-```json
+:``json
 {
   "compilerOptions": {
     "baseUrl": ".",
