@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { Box, Card, TextField, Button, Text, Flex, Heading, Callout } from "@radix-ui/themes"
 import { useRegister } from "@/api/generated"
+import { setAccessToken } from "@/utils"
 import FormField from "@/components/FormField"
 
 interface RegisterFormData {
@@ -25,8 +26,9 @@ const RegisterPage = () => {
 
   async function onSubmit(data: RegisterFormData) {
     try {
-      await registerMutation.mutateAsync({ data: { email: data.email, name: data.displayName, password: data.password } })
-      navigate("/login")
+      const response = await registerMutation.mutateAsync({ data: { email: data.email, name: data.displayName, password: data.password } })
+      setAccessToken(response.access_token, response.expires_in)
+      navigate("/dashboard")
     } catch (err) {
       const message = err instanceof Error ? err.message : "Registration failed"
       setError("root", { message })
