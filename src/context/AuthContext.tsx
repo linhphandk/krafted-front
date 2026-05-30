@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return
       }
       try {
-        const user = await apiClient<UserResponse>("/api/auth/me")
+        const user = await apiClient<UserResponse>("/auth/me")
         if (!cancelled) setUser(user)
       } catch {
         clearTokens()
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
-    const response = await apiClient<{ access_token: string; refresh_token: string; expires_in: number; user: UserResponse }>("/api/auth/login", {
+    const response = await apiClient<{ access_token: string; refresh_token: string; expires_in: number; user: UserResponse }>("/auth/login", {
       method: "POST",
       body: { email, password },
       skipAuth: true,
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const register = useCallback(async (email: string, password: string, displayName: string) => {
-    const response = await apiClient<{ access_token: string; expires_in: number; user: UserResponse }>("/api/auth/register", {
+    const response = await apiClient<{ access_token: string; expires_in: number; user: UserResponse }>("/auth/register", {
       method: "POST",
       body: { email, password, name: displayName } as RegisterRequest,
       skipAuth: true,
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     const token = getAccessToken()
     if (token) {
-      try { await apiClient("/api/auth/logout", { method: "POST", body: { access_token: token } }) } catch { /* ignore */ }
+      try { await apiClient("/auth/logout", { method: "POST", body: { access_token: token } }) } catch { /* ignore */ }
     }
     clearTokens()
     setUser(null)

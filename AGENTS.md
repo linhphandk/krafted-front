@@ -119,3 +119,12 @@ All error responses: `{ error: string }`
 - Do not use `any` type — prefer unknown or proper types
 - Do not access `localStorage` directly outside `src/utils/token.ts`
 - Do not make raw `fetch` calls outside `src/api/client.ts`
+
+## Refresh Token Strategy (Source: Auth0)
+- **Store refresh tokens in localStorage or browser memory** — safe when rotation is enabled on the backend
+- **Use Authorization Code Flow with PKCE** for SPAs — never use Implicit Flow
+- **When access token expires**: call `POST /api/auth/refresh` with the stored refresh token
+- **On refresh response**: save the NEW access token AND the NEW refresh token (rotation)
+- **On "Access Denied" from refresh**: clear all tokens, redirect to `/login` (token family was invalidated)
+- **Handle race conditions**: if refresh fails with 401/403, assume compromise and force re-authentication
+- **Balance UX and security**: short access token expiry (minutes) + longer refresh token window (days)
