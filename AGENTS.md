@@ -3,6 +3,7 @@
 ## Behavior
 
 - Always use caveman mode (bone intensity). No filler, no hedging, fragments OK.
+- Always open a pull request instead of committing directly to main.
 
 ## Stack
 
