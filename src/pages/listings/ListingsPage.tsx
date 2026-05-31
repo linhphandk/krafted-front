@@ -7,7 +7,7 @@ import ListingsFilter from "@/components/ListingsFilter"
 import Pagination from "@/components/Pagination"
 
 const ListingsPage = () => {
-  const [filters, setFilters] = useState<ListListingsParams>({ page: 1, per_page: 12 })
+  const [filters, setFilters] = useState<ListListingsParams>({ page: 1, per_page: 12, status: "active" })
   const { data: listingsData, isLoading, error } = useListings(filters)
   const { data: categories } = useCategories()
 
