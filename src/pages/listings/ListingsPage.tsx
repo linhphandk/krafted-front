@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { keepPreviousData } from "@tanstack/react-query"
 import { Flex, Grid, Heading, Spinner, Callout } from "@radix-ui/themes"
 import { useListListings, useListCategories } from "@/api/generated"
 import type { ListListingsParams } from "@/api/generated"
@@ -8,10 +9,12 @@ import Pagination from "@/components/Pagination"
 
 const ListingsPage = () => {
   const [filters, setFilters] = useState<ListListingsParams>({ page: 1, per_page: 12, status: "active" })
-  const { data: listingsData, isLoading, error } = useListListings(filters)
+  const { data: listingsData, isFetching, error } = useListListings(filters, {
+    query: { placeholderData: keepPreviousData },
+  })
   const { data: categories } = useListCategories()
 
-  if (isLoading) {
+  if (!listingsData && isFetching) {
     return (
       <Flex align="center" justify="center" style={{ minHeight: "40vh" }}>
         <Spinner size="3" aria-label="Loading" />
