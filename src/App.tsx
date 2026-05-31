@@ -4,6 +4,7 @@ import Layout from "./components/Layout"
 import RegisterPage from "./pages/auth/RegisterPage"
 import LoginPage from "./pages/auth/LoginPage"
 import DashboardPage from "./pages/DashboardPage"
+import CreateListingPage from "./pages/listings/CreateListingPage"
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         >
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/listings/new" element={<CreateListingPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
