@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
 import { login as apiLogin, register as apiRegister, logout as apiLogout, me as apiMe } from "@/api/generated"
-import { setTokens, setAccessToken, clearTokens, hasTokens, getRefreshToken } from "@/utils/token"
+import { setTokens, setAccessToken, clearTokens, hasTokens, getRefreshToken, setUserId } from "@/utils/token"
 import type { UserResponse } from "@/api/generated"
 
 interface AuthContextValue {
@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       try {
         const user = await apiMe()
-        if (!cancelled) setUser(user)
+        if (!cancelled) { setUser(user); setUserId(user.id) }
       } catch {
         clearTokens()
       }
@@ -42,12 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const response = await apiLogin({ email, password })
     setTokens(response.access_token, response.refresh_token, response.expires_in)
+    setUserId(response.user.id)
     setUser(response.user)
   }, [])
 
   const register = useCallback(async (email: string, password: string, displayName: string) => {
     const response = await apiRegister({ email, password, name: displayName })
     setAccessToken(response.access_token, response.expires_in)
+    setUserId(response.user.id)
     setUser(response.user)
   }, [])
 

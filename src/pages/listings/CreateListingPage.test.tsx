@@ -3,7 +3,10 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
 import { Theme } from "@radix-ui/themes"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import CreateListingPage from "./CreateListingPage"
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
 beforeAll(() => {
   globalThis.ResizeObserver = class ResizeObserver {
@@ -15,11 +18,13 @@ beforeAll(() => {
 
 function renderPage() {
   return render(
-    <Theme>
-      <MemoryRouter>
-        <CreateListingPage />
-      </MemoryRouter>
-    </Theme>,
+    <QueryClientProvider client={queryClient}>
+      <Theme>
+        <MemoryRouter>
+          <CreateListingPage />
+        </MemoryRouter>
+      </Theme>
+    </QueryClientProvider>,
   )
 }
 

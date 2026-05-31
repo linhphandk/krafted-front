@@ -24,9 +24,72 @@ import type {
 } from '@tanstack/react-query';
 
 import { customFetch } from './custom-fetch';
+export interface Category {
+  created_at: string;
+  id: string;
+  kind: string;
+  name: string;
+  slug: string;
+}
+
+export type ListingCondition = typeof ListingCondition[keyof typeof ListingCondition];
+
+
+export const ListingCondition = {
+  Handmade: 'Handmade',
+  New: 'New',
+  Vintage: 'Vintage',
+  Refurbished: 'Refurbished',
+} as const;
+
+export interface CreateListingRequest {
+  category_id: string;
+  condition: ListingCondition;
+  description: string;
+  price_cents: number;
+  /** @nullable */
+  quantity?: number | null;
+  title: string;
+}
+
 export interface ErrorResponse {
   message: string;
 }
+
+export interface ListingResponse {
+  category_id: string;
+  /** @nullable */
+  category_name?: string | null;
+  condition: string;
+  created_at: string;
+  description: string;
+  id: string;
+  price_cents: number;
+  quantity: number;
+  seller_id: string;
+  status: string;
+  title: string;
+  updated_at: string;
+}
+
+export type ListingSort = typeof ListingSort[keyof typeof ListingSort];
+
+
+export const ListingSort = {
+  newest: 'newest',
+  price_asc: 'price_asc',
+  price_desc: 'price_desc',
+} as const;
+
+export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
+
+
+export const ListingStatus = {
+  Draft: 'Draft',
+  Active: 'Active',
+  Paused: 'Paused',
+  Closed: 'Closed',
+} as const;
 
 export interface LoginRequest {
   email: string;
@@ -49,6 +112,30 @@ export interface LoginResponse {
 
 export interface LogoutRequest {
   refresh_token: string;
+}
+
+export type PaginatedResponseListingResponseItemsItem = {
+  category_id: string;
+  /** @nullable */
+  category_name?: string | null;
+  condition: string;
+  created_at: string;
+  description: string;
+  id: string;
+  price_cents: number;
+  quantity: number;
+  seller_id: string;
+  status: string;
+  title: string;
+  updated_at: string;
+};
+
+export interface PaginatedResponseListingResponse {
+  items: PaginatedResponseListingResponseItemsItem[];
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
 }
 
 export interface RefreshRequest {
@@ -76,9 +163,725 @@ export interface RegisterResponse {
   user: UserResponse;
 }
 
+export interface UpdateListingRequest {
+  /** @nullable */
+  category_id?: string | null;
+  condition?: null | ListingCondition;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  price_cents?: number | null;
+  /** @nullable */
+  quantity?: number | null;
+  status?: null | ListingStatus;
+  /** @nullable */
+  title?: string | null;
+}
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
+
+export const getListCategoriesUrl = () => {
+
+
+
+
+  return `/api/categories`
+}
+
+export const listCategories = async ( options?: RequestInit): Promise<Category[]> => {
+
+  return customFetch<Category[]>(getListCategoriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCategoriesQueryKey = () => {
+    return [
+    `/api/categories`
+    ] as const;
+    }
+
+
+export const getListCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCategoriesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCategories>>> = ({ signal }) => listCategories({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof listCategories>>>
+export type ListCategoriesQueryError = unknown
+
+
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCategories>>,
+          TError,
+          Awaited<ReturnType<typeof listCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCategories>>,
+          TError,
+          Awaited<ReturnType<typeof listCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListCategoriesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListListingsUrl = () => {
+
+
+
+
+  return `/api/listings`
+}
+
+export const listListings = async ( options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
+
+  return customFetch<PaginatedResponseListingResponse>(getListListingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListListingsQueryKey = () => {
+    return [
+    `/api/listings`
+    ] as const;
+    }
+
+
+export const getListListingsQueryOptions = <TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListListingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listListings>>> = ({ signal }) => listListings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListListingsQueryResult = NonNullable<Awaited<ReturnType<typeof listListings>>>
+export type ListListingsQueryError = unknown
+
+
+export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listListings>>,
+          TError,
+          Awaited<ReturnType<typeof listListings>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listListings>>,
+          TError,
+          Awaited<ReturnType<typeof listListings>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListListingsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateListingUrl = () => {
+
+
+
+
+  return `/api/listings`
+}
+
+export const createListing = async (createListingRequest: CreateListingRequest, options?: RequestInit): Promise<ListingResponse> => {
+
+  return customFetch<ListingResponse>(getCreateListingUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createListingRequest)
+  }
+);}
+
+
+
+
+export const getCreateListingMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createListing>>, TError,{data: CreateListingRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createListing>>, TError,{data: CreateListingRequest}, TContext> => {
+
+const mutationKey = ['createListing'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createListing>>, {data: CreateListingRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createListing(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateListingMutationResult = NonNullable<Awaited<ReturnType<typeof createListing>>>
+    export type CreateListingMutationBody = CreateListingRequest
+    export type CreateListingMutationError = void
+
+    export const useCreateListing = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createListing>>, TError,{data: CreateListingRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createListing>>,
+        TError,
+        {data: CreateListingRequest},
+        TContext
+      > => {
+      return useMutation(getCreateListingMutationOptions(options), queryClient);
+    }
+
+export const getSellerListingsUrl = () => {
+
+
+
+
+  return `/api/listings/mine`
+}
+
+export const sellerListings = async ( options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
+
+  return customFetch<PaginatedResponseListingResponse>(getSellerListingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getSellerListingsQueryKey = () => {
+    return [
+    `/api/listings/mine`
+    ] as const;
+    }
+
+
+export const getSellerListingsQueryOptions = <TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSellerListingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof sellerListings>>> = ({ signal }) => sellerListings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SellerListingsQueryResult = NonNullable<Awaited<ReturnType<typeof sellerListings>>>
+export type SellerListingsQueryError = void
+
+
+export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sellerListings>>,
+          TError,
+          Awaited<ReturnType<typeof sellerListings>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sellerListings>>,
+          TError,
+          Awaited<ReturnType<typeof sellerListings>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSellerListingsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetListingUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}`
+}
+
+export const getListing = async (id: string, options?: RequestInit): Promise<ListingResponse> => {
+
+  return customFetch<ListingResponse>(getGetListingUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetListingQueryKey = (id: string,) => {
+    return [
+    `/api/listings/${id}`
+    ] as const;
+    }
+
+
+export const getGetListingQueryOptions = <TData = Awaited<ReturnType<typeof getListing>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetListingQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getListing>>> = ({ signal }) => getListing(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetListingQueryResult = NonNullable<Awaited<ReturnType<typeof getListing>>>
+export type GetListingQueryError = void
+
+
+export function useGetListing<TData = Awaited<ReturnType<typeof getListing>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getListing>>,
+          TError,
+          Awaited<ReturnType<typeof getListing>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetListing<TData = Awaited<ReturnType<typeof getListing>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getListing>>,
+          TError,
+          Awaited<ReturnType<typeof getListing>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetListing<TData = Awaited<ReturnType<typeof getListing>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetListing<TData = Awaited<ReturnType<typeof getListing>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getListing>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetListingQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getDeleteListingUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}`
+}
+
+export const deleteListing = async (id: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteListingUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteListingMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteListing>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteListing'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteListing>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteListing(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteListingMutationResult = NonNullable<Awaited<ReturnType<typeof deleteListing>>>
+
+    export type DeleteListingMutationError = void
+
+    export const useDeleteListing = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteListing>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getDeleteListingMutationOptions(options), queryClient);
+    }
+
+export const getUpdateListingUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}`
+}
+
+export const updateListing = async (id: string,
+    updateListingRequest: UpdateListingRequest, options?: RequestInit): Promise<ListingResponse> => {
+
+  return customFetch<ListingResponse>(getUpdateListingUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateListingRequest)
+  }
+);}
+
+
+
+
+export const getUpdateListingMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateListing>>, TError,{id: string;data: UpdateListingRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateListing>>, TError,{id: string;data: UpdateListingRequest}, TContext> => {
+
+const mutationKey = ['updateListing'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateListing>>, {id: string;data: UpdateListingRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateListing(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateListingMutationResult = NonNullable<Awaited<ReturnType<typeof updateListing>>>
+    export type UpdateListingMutationBody = UpdateListingRequest
+    export type UpdateListingMutationError = void
+
+    export const useUpdateListing = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateListing>>, TError,{id: string;data: UpdateListingRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateListing>>,
+        TError,
+        {id: string;data: UpdateListingRequest},
+        TContext
+      > => {
+      return useMutation(getUpdateListingMutationOptions(options), queryClient);
+    }
+
+export const getPauseListingUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}/pause`
+}
+
+export const pauseListing = async (id: string, options?: RequestInit): Promise<ListingResponse> => {
+
+  return customFetch<ListingResponse>(getPauseListingUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getPauseListingMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof pauseListing>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['pauseListing'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof pauseListing>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  pauseListing(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PauseListingMutationResult = NonNullable<Awaited<ReturnType<typeof pauseListing>>>
+
+    export type PauseListingMutationError = void
+
+    export const usePauseListing = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof pauseListing>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getPauseListingMutationOptions(options), queryClient);
+    }
+
+export const getPublishListingUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}/publish`
+}
+
+export const publishListing = async (id: string, options?: RequestInit): Promise<ListingResponse> => {
+
+  return customFetch<ListingResponse>(getPublishListingUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getPublishListingMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof publishListing>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['publishListing'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof publishListing>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  publishListing(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PublishListingMutationResult = NonNullable<Awaited<ReturnType<typeof publishListing>>>
+
+    export type PublishListingMutationError = void
+
+    export const usePublishListing = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishListing>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof publishListing>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getPublishListingMutationOptions(options), queryClient);
+    }
 
 export const getLoginUrl = () => {
 
