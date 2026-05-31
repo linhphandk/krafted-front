@@ -18,10 +18,10 @@ import { useCreateListing, useListCategories } from "@/api/generated"
 import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
-  { value: "handmade", label: "Handmade" },
-  { value: "new", label: "New" },
-  { value: "vintage", label: "Vintage" },
-  { value: "refurbished", label: "Refurbished" },
+  { value: "Handmade", label: "Handmade" },
+  { value: "New", label: "New" },
+  { value: "Vintage", label: "Vintage" },
+  { value: "Refurbished", label: "Refurbished" },
 ] as const
 
 interface CreateListingFormData {
@@ -57,9 +57,10 @@ const CreateListingPage = () => {
         description: data.description,
         price_cents: Math.round(parseFloat(data.price) * 100),
         category_id: data.category_id,
-        condition: data.condition as CreateListingRequest["condition"],
+        condition: data.condition,
         quantity: parseInt(data.quantity, 10),
-      }
+        status: data.is_active ? "active" : "draft",
+      } as CreateListingRequest & { status: string }
       const listing = await createListing.mutateAsync({ data: payload })
       navigate(`/listings/${listing.id}`)
     } catch (err) {
