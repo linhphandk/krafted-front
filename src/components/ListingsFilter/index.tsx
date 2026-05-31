@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react"
-import { Flex, TextField, Button, Select, Tabs, Dialog } from "@radix-ui/themes"
+import { Flex, Text, TextField, Button, Select, Dialog, RadioGroup } from "@radix-ui/themes"
 import type { ListListingsParams } from "@/api/generated"
 import type { Category } from "@/api/generated"
 
@@ -69,17 +69,6 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
         <Dialog.Content style={{ maxWidth: 400 }}>
           <Dialog.Title>Filters</Dialog.Title>
           <Flex direction="column" gap="3" mt="3">
-            <Tabs.Root
-              value={currentKind}
-              onValueChange={(val) => updateFilter({ kind: val === "all" ? undefined : val })}
-            >
-              <Tabs.List>
-                <Tabs.Trigger value="all" style={{ cursor: "pointer" }}>All</Tabs.Trigger>
-                <Tabs.Trigger value="craft" style={{ cursor: "pointer" }}>Crafts</Tabs.Trigger>
-                <Tabs.Trigger value="supply" style={{ cursor: "pointer" }}>Supplies</Tabs.Trigger>
-              </Tabs.List>
-            </Tabs.Root>
-
             <Select.Root
               value={filters.category_id || "all"}
               onValueChange={(val) => updateFilter({ category_id: val === "all" ? undefined : val })}
@@ -109,13 +98,42 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
               </Select.Content>
             </Select.Root>
 
-            <Button
-              variant="soft"
-              style={{ cursor: "pointer" }}
-              onClick={() => onFiltersChange({ page: 1, status: "active", per_page: 12 })}
+            <Text size="2" weight="bold" mb="1">Type</Text>
+            <RadioGroup.Root
+              value={currentKind}
+              onValueChange={(val: string) => updateFilter({ kind: val === "all" ? undefined : val })}
             >
-              Clear filters
-            </Button>
+              <Flex gap="2" direction="column">
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <RadioGroup.Item value="all" style={{ cursor: "pointer" }} /> All
+                  </Flex>
+                </Text>
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <RadioGroup.Item value="craft" style={{ cursor: "pointer" }} /> Crafts
+                  </Flex>
+                </Text>
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <RadioGroup.Item value="supply" style={{ cursor: "pointer" }} /> Supplies
+                  </Flex>
+                </Text>
+              </Flex>
+            </RadioGroup.Root>
+
+            <Flex gap="2" justify="between">
+              <Button
+                variant="soft"
+                style={{ cursor: "pointer" }}
+                onClick={() => onFiltersChange({ page: 1, status: "active", per_page: 12 })}
+              >
+                Clear filters
+              </Button>
+              <Dialog.Close>
+                <Button style={{ cursor: "pointer" }}>Close</Button>
+              </Dialog.Close>
+            </Flex>
           </Flex>
         </Dialog.Content>
       </Dialog.Root>

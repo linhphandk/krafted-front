@@ -45,12 +45,12 @@ describe("ListingsFilter", () => {
     expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
   })
 
-  it("renders kind tabs inside dialog", async () => {
+  it("renders kind options inside dialog", async () => {
     renderFilter()
     await openDialog()
-    expect(screen.getByRole("tab", { name: /^All/ })).toBeInTheDocument()
-    expect(screen.getByRole("tab", { name: /^Crafts/ })).toBeInTheDocument()
-    expect(screen.getByRole("tab", { name: /^Supplies/ })).toBeInTheDocument()
+    expect(screen.getByText("All")).toBeInTheDocument()
+    expect(screen.getByText("Crafts")).toBeInTheDocument()
+    expect(screen.getByText("Supplies")).toBeInTheDocument()
   })
 
   it("renders category select inside dialog", async () => {
@@ -71,12 +71,12 @@ describe("ListingsFilter", () => {
     expect(screen.getByText("Clear filters")).toBeInTheDocument()
   })
 
-  it("calls onFiltersChange when kind tab changes", async () => {
+  it("calls onFiltersChange when kind changes", async () => {
     const fn = vi.fn()
     const user = userEvent.setup()
     renderFilter({}, fn)
     await user.click(screen.getByRole("button", { name: "Filters" }))
-    await user.click(screen.getByRole("tab", { name: /^Crafts/ }))
+    await user.click(screen.getByLabelText("Crafts"))
     expect(fn).toHaveBeenCalledWith(expect.objectContaining({ kind: "craft", page: 1 }))
   })
 })
