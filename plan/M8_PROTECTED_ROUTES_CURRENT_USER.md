@@ -224,7 +224,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
 
 **File**: `src/components/RequirePermission/index.tsx`
 
-For RBAC (M6), we need a component that checks if the current user has a specific permission. For now, create the component but implement it as a pass-through (all permissions granted) since RBAC isn't implemented yet.
+For RBAC (M10), we need a component that checks if the current user has a specific permission. For now, create the component but implement it as a pass-through (all permissions granted) since RBAC isn't implemented yet.
 
 ```tsx
 import { useAuth } from "@/context"
@@ -238,7 +238,7 @@ interface RequirePermissionProps {
 export default function RequirePermission({ permission, children }: RequirePermissionProps) {
   const { user } = useAuth()
 
-  // TODO: In M6, check actual permissions from user roles
+  // TODO: In M10, check actual permissions from user roles
   // For now, all authenticated users have all permissions
   // When RBAC is implemented, replace this with:
   // const permissions = usePermissions()
@@ -260,7 +260,7 @@ export default function RequirePermission({ permission, children }: RequirePermi
 }
 ```
 
-**Estimated lines**: ~30loc (will be expanded in M6)
+**Estimated lines**: ~30loc (will be expanded in M10)
 
 ---
 

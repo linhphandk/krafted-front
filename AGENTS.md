@@ -112,9 +112,11 @@ User endpoints (protected):
 
 Role endpoints (protected, requires roles:read/write):
 - `GET /api/roles`
+- `GET /api/roles/:id`
 - `POST /api/roles` — `{name, description, permissions}`
 - `PATCH /api/roles/:id`
 - `DELETE /api/roles/:id`
+- `GET /api/users/:id/roles` — user's assigned roles
 - `POST /api/users/:id/roles` — `{role_id}`
 - `DELETE /api/users/:id/roles/:roleId`
 
@@ -127,12 +129,12 @@ Listing endpoints (public):
 - `GET /api/categories?kind=craft|supply` — categories filtered by kind
 
 Listing endpoints (protected):
-- `POST /api/listings` — create listing `{title, description, price_cents, category_id, condition, quantity}`
+- `POST /api/listings` — create listing `{title, description, price_cents, category_id, condition, quantity, status?}`
 - `PATCH /api/listings/:id` — update listing (partial)
 - `DELETE /api/listings/:id` — delete listing
 - `POST /api/listings/:id/publish` — set status to "active"
 - `POST /api/listings/:id/pause` — set status to "paused"
-- `GET /api/listings/mine?page=&per_page=` — current user's listings
+- `GET /api/listings/mine?page=&per_page=&status=` — current user's listings (optional status filter)
 
 ## Do NOT
 

@@ -25,6 +25,7 @@ export interface Listing {
   description: string
   price_cents: number
   category_id: string
+  category_name?: string
   status: ListingStatus
   condition: ListingCondition
   quantity: number
@@ -55,6 +56,7 @@ export interface CreateListingRequest {
   category_id: string
   condition: ListingCondition
   quantity: number
+  status?: ListingStatus
 }
 
 export interface UpdateListingRequest {
@@ -128,10 +130,11 @@ export async function pauseListing(id: string): Promise<Listing> {
   return customFetch<Listing>(`/api/listings/${id}/pause`, { method: "POST" })
 }
 
-export async function fetchMyListings(page?: number, perPage?: number): Promise<PaginatedResponse<Listing>> {
+export async function fetchMyListings(page?: number, perPage?: number, status?: ListingStatus): Promise<PaginatedResponse<Listing>> {
   const query = new URLSearchParams()
   if (page) query.set("page", page.toString())
   if (perPage) query.set("per_page", perPage.toString())
+  if (status) query.set("status", status)
   return customFetch<PaginatedResponse<Listing>>(`/api/listings/mine?${query.toString()}`)
 }
 ```
