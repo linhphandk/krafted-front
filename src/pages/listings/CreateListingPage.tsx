@@ -56,7 +56,7 @@ const CreateListingPage = () => {
     setError,
   } = useForm<CreateListingFormData>({
     mode: "onChange",
-    defaultValues: { quantity: "1", is_active: false },
+    defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "" },
   })
 
   async function onSubmit(_data: CreateListingFormData) {
