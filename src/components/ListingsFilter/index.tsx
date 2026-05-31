@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react"
 import { Flex, TextField, Button, Select, Tabs } from "@radix-ui/themes"
-import type { ListListingsParams } from "@/api/listings"
+import type { ListListingsParams } from "@/api/generated"
 import type { Category } from "@/api/generated"
 
 interface ListingsFilterProps {
@@ -91,9 +91,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
 
       <Button
         variant="soft"
-        onClick={() =>
-          onFiltersChange({ page: 1 })
-        }
+        onClick={() => onFiltersChange({ page: 1, status: "active", per_page: 12 })}
       >
         Clear filters
       </Button>
