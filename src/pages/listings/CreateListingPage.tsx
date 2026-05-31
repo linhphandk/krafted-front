@@ -14,7 +14,7 @@ import {
   Switch,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-import { useCreateListing, useListCategories } from "@/api/generated"
+import { useCreateListing, useListCategories, usePublishListing } from "@/api/generated"
 import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
@@ -37,6 +37,7 @@ interface CreateListingFormData {
 const CreateListingPage = () => {
   const navigate = useNavigate()
   const createListing = useCreateListing()
+  const publishListing = usePublishListing()
   const { data: categories } = useListCategories()
 
   const {
@@ -59,9 +60,11 @@ const CreateListingPage = () => {
         category_id: data.category_id,
         condition: data.condition,
         quantity: parseInt(data.quantity, 10),
-        status: data.is_active ? "active" : "draft",
-      } as CreateListingRequest & { status: string }
+      }
       const listing = await createListing.mutateAsync({ data: payload })
+      if (data.is_active) {
+        await publishListing.mutateAsync({ id: listing.id })
+      }
       navigate(`/listings/${listing.id}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to create listing"
