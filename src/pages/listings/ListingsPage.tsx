@@ -1,11 +1,20 @@
+import { useState } from "react"
+import { keepPreviousData } from "@tanstack/react-query"
 import { Flex, Grid, Heading, Spinner, Callout } from "@radix-ui/themes"
-import { useListListings } from "@/api/generated"
+import { useListListings, useListCategories } from "@/api/generated"
+import type { ListListingsParams } from "@/api/generated"
 import ListingCard from "@/components/ListingCard"
+import ListingsFilter from "@/components/ListingsFilter"
+import Pagination from "@/components/Pagination"
 
 const ListingsPage = () => {
-  const { data: listingsData, isLoading, error } = useListListings()
+  const [filters, setFilters] = useState<ListListingsParams>({ page: 1, per_page: 12, status: "active" })
+  const { data: listingsData, isFetching, error } = useListListings(filters, {
+    query: { placeholderData: keepPreviousData },
+  })
+  const { data: categories } = useListCategories()
 
-  if (isLoading) {
+  if (!listingsData && isFetching) {
     return (
       <Flex align="center" justify="center" style={{ minHeight: "40vh" }}>
         <Spinner size="3" aria-label="Loading" />
@@ -24,27 +33,41 @@ const ListingsPage = () => {
   }
 
   const listings = listingsData?.items || []
-
-  if (listings.length === 0) {
-    return (
-      <Flex direction="column" gap="4" align="center" style={{ minHeight: "40vh" }} justify="center">
-        <Heading size="6">Browse listings</Heading>
-        <Callout.Root color="gray" size="1">
-          <Callout.Text>No listings found</Callout.Text>
-        </Callout.Root>
-      </Flex>
-    )
-  }
+  const totalPages = listingsData?.total_pages || 1
 
   return (
     <Flex direction="column" gap="4">
       <Heading size="6">Browse listings</Heading>
 
-      <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
-        {listings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
-        ))}
-      </Grid>
+      <ListingsFilter
+        filters={filters}
+        onFiltersChange={setFilters}
+        categories={categories || []}
+      />
+
+      {listings.length === 0 ? (
+        <Flex align="center" justify="center" style={{ minHeight: "20vh" }}>
+          <Callout.Root color="gray" size="1">
+            <Callout.Text>No listings found</Callout.Text>
+          </Callout.Root>
+        </Flex>
+      ) : (
+        <>
+          <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
+            {listings.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </Grid>
+
+          {totalPages > 1 && (
+            <Pagination
+              page={filters.page || 1}
+              totalPages={totalPages}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+            />
+          )}
+        </>
+      )}
     </Flex>
   )
 }

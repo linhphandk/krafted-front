@@ -13,6 +13,7 @@ const Pagination = ({ page, totalPages, onPageChange }: PaginationProps) => {
         variant="soft"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
+        style={{ cursor: page <= 1 ? "not-allowed" : "pointer" }}
       >
         Previous
       </Button>
@@ -23,6 +24,7 @@ const Pagination = ({ page, totalPages, onPageChange }: PaginationProps) => {
         variant="soft"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
+        style={{ cursor: page >= totalPages ? "not-allowed" : "pointer" }}
       >
         Next
       </Button>
