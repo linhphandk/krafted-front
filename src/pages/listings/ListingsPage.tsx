@@ -39,39 +39,35 @@ const ListingsPage = () => {
     <Flex direction="column" gap="4">
       <Heading size="6">Browse listings</Heading>
 
-      <Grid columns="250px 1fr" gap="4">
-        <ListingsFilter
-          filters={filters}
-          onFiltersChange={setFilters}
-          categories={categories || []}
-        />
+      <ListingsFilter
+        filters={filters}
+        onFiltersChange={setFilters}
+        categories={categories || []}
+      />
 
-        <Flex direction="column" gap="4">
-          {listings.length === 0 ? (
-            <Flex align="center" justify="center" style={{ minHeight: "20vh" }}>
-              <Callout.Root color="gray" size="1">
-                <Callout.Text>No listings found</Callout.Text>
-              </Callout.Root>
-            </Flex>
-          ) : (
-            <>
-              <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
-                {listings.map((listing) => (
-                  <ListingCard key={listing.id} listing={listing} />
-                ))}
-              </Grid>
-
-              {totalPages > 1 && (
-                <Pagination
-                  page={filters.page || 1}
-                  totalPages={totalPages}
-                  onPageChange={(p) => setFilters({ ...filters, page: p })}
-                />
-              )}
-            </>
-          )}
+      {listings.length === 0 ? (
+        <Flex align="center" justify="center" style={{ minHeight: "20vh" }}>
+          <Callout.Root color="gray" size="1">
+            <Callout.Text>No listings found</Callout.Text>
+          </Callout.Root>
         </Flex>
-      </Grid>
+      ) : (
+        <>
+          <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
+            {listings.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </Grid>
+
+          {totalPages > 1 && (
+            <Pagination
+              page={filters.page || 1}
+              totalPages={totalPages}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+            />
+          )}
+        </>
+      )}
     </Flex>
   )
 }

@@ -38,10 +38,13 @@ describe("ListingsPage", () => {
     expect(await screen.findByText("Browse listings")).toBeInTheDocument()
   })
 
-  it("renders filter bar", async () => {
+  it("renders search input", async () => {
     renderPage()
-    expect(await screen.findByRole("tab", { name: /^All/ })).toBeInTheDocument()
-    expect(await screen.findByRole("tab", { name: /^Crafts/ })).toBeInTheDocument()
-    expect(await screen.findByRole("tab", { name: /^Supplies/ })).toBeInTheDocument()
+    expect(await screen.findByPlaceholderText("Search listings...")).toBeInTheDocument()
+  })
+
+  it("renders filters button", async () => {
+    renderPage()
+    expect(await screen.findByRole("button", { name: "Filters" })).toBeInTheDocument()
   })
 })
