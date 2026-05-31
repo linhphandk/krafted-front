@@ -6,6 +6,7 @@ import LoginPage from "./pages/auth/LoginPage"
 import DashboardPage from "./pages/DashboardPage"
 import CreateListingPage from "./pages/listings/CreateListingPage"
 import ListingDetailPage from "./pages/listings/ListingDetailPage"
+import ListingsPage from "./pages/listings/ListingsPage"
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         >
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/listings" element={<ListingsPage />} />
           <Route path="/listings/new" element={<CreateListingPage />} />
           <Route path="/listings/:id" element={<ListingDetailPage />} />
         </Route>
