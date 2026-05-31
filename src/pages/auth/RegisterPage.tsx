@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { Box, Card, TextField, Button, Text, Flex, Heading, Callout } from "@radix-ui/themes"
-import { useRegister } from "@/api/generated"
-import { setAccessToken } from "@/utils"
+import { useAuth } from "@/context"
 import FormField from "@/components/FormField"
 
 interface RegisterFormData {
@@ -14,7 +13,7 @@ interface RegisterFormData {
 
 const RegisterPage = () => {
   const navigate = useNavigate()
-  const registerMutation = useRegister()
+  const { register: registerUser } = useAuth()
 
   const {
     register,
@@ -26,12 +25,7 @@ const RegisterPage = () => {
 
   async function onSubmit(data: RegisterFormData) {
     try {
-      const response = await registerMutation.mutateAsync({ data: { email: data.email, name: data.displayName, password: data.password } })
-      if (!response?.access_token || !response?.expires_in) {
-        setError("root", { message: "Invalid response from server" })
-        return
-      }
-      setAccessToken(response.access_token, response.expires_in)
+      await registerUser(data.email, data.password, data.displayName)
       navigate("/dashboard")
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Registration failed"
@@ -95,7 +89,7 @@ const RegisterPage = () => {
                 />
               </FormField>
 
-              <Button type="submit" loading={isSubmitting || registerMutation.isPending} size="3">
+              <Button type="submit" loading={isSubmitting} size="3">
                 Create account
               </Button>
             </Flex>

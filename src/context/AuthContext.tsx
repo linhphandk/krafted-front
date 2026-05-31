@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
-import { apiClient } from "@/api/client"
-import { setTokens, setAccessToken, clearTokens, hasTokens, getAccessToken } from "@/utils/token"
-import type { UserResponse, RegisterRequest } from "@/api/generated"
+import { login as apiLogin, register as apiRegister, logout as apiLogout, me as apiMe } from "@/api/generated"
+import { setTokens, setAccessToken, clearTokens, hasTokens, getRefreshToken } from "@/utils/token"
+import type { UserResponse } from "@/api/generated"
 
 interface AuthContextValue {
   user: UserResponse | null
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return
       }
       try {
-        const user = await apiClient<UserResponse>("/auth/me")
+        const user = await apiMe()
         if (!cancelled) setUser(user)
       } catch {
         clearTokens()
@@ -40,29 +40,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
-    const response = await apiClient<{ access_token: string; refresh_token: string; expires_in: number; user: UserResponse }>("/auth/login", {
-      method: "POST",
-      body: { email, password },
-      skipAuth: true,
-    })
+    const response = await apiLogin({ email, password })
     setTokens(response.access_token, response.refresh_token, response.expires_in)
     setUser(response.user)
   }, [])
 
   const register = useCallback(async (email: string, password: string, displayName: string) => {
-    const response = await apiClient<{ access_token: string; expires_in: number; user: UserResponse }>("/auth/register", {
-      method: "POST",
-      body: { email, password, name: displayName } as RegisterRequest,
-      skipAuth: true,
-    })
+    const response = await apiRegister({ email, password, name: displayName })
     setAccessToken(response.access_token, response.expires_in)
     setUser(response.user)
   }, [])
 
   const logout = useCallback(async () => {
-    const token = getAccessToken()
-    if (token) {
-      try { await apiClient("/auth/logout", { method: "POST", body: { access_token: token } }) } catch { /* ignore */ }
+    const refreshToken = getRefreshToken()
+    if (refreshToken) {
+      try { await apiLogout({ refresh_token: refreshToken }) } catch { /* ignore */ }
     }
     clearTokens()
     setUser(null)
