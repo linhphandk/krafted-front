@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router"
+import { Link, useNavigate, useLocation } from "react-router"
+import type { Location } from "react-router"
 import { useForm } from "react-hook-form"
 import { Box, Card, TextField, Button, Text, Flex, Heading, Callout } from "@radix-ui/themes"
 import { useAuth } from "@/context"
@@ -11,7 +12,9 @@ interface LoginFormData {
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
+  const from = (location.state as { from?: Location })?.from?.pathname || "/dashboard"
 
   const {
     register,
@@ -23,7 +26,7 @@ const LoginPage = () => {
   async function onSubmit(data: LoginFormData) {
     try {
       await login(data.email, data.password)
-      navigate("/dashboard")
+      navigate(from, { replace: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Login failed"
       setError("root", { message })
