@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react"
+import { useCallback, useRef, useState, useEffect } from "react"
 import { Flex, TextField, Button, Select, Tabs } from "@radix-ui/themes"
 import type { ListListingsParams } from "@/api/generated"
 import type { Category } from "@/api/generated"
@@ -16,7 +16,12 @@ const SORT_OPTIONS = [
 ] as const
 
 const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilterProps) => {
+  const [searchValue, setSearchValue] = useState(filters.search || "")
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    setSearchValue(filters.search || "")
+  }, [filters.search])
 
   const updateFilter = useCallback(
     (patch: Partial<ListListingsParams>) => {
@@ -27,6 +32,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
 
   const handleSearchChange = useCallback(
     (value: string) => {
+      setSearchValue(value)
       clearTimeout(debounceRef.current)
       debounceRef.current = setTimeout(() => {
         updateFilter({ search: value || undefined })
@@ -56,7 +62,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
 
       <TextField.Root
         placeholder="Search listings..."
-        defaultValue={filters.search}
+        value={searchValue}
         onChange={(e) => handleSearchChange(e.target.value)}
       />
 
