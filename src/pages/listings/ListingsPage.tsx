@@ -1,15 +1,9 @@
-import { useState } from "react"
 import { Flex, Grid, Heading, Spinner, Callout } from "@radix-ui/themes"
-import { useListings, useCategories } from "@/api/listings"
-import type { ListListingsParams } from "@/api/listings"
+import { useListListings } from "@/api/generated"
 import ListingCard from "@/components/ListingCard"
-import ListingsFilter from "@/components/ListingsFilter"
-import Pagination from "@/components/Pagination"
 
 const ListingsPage = () => {
-  const [filters, setFilters] = useState<ListListingsParams>({ page: 1, per_page: 12 })
-  const { data: listingsData, isLoading, error } = useListings(filters)
-  const { data: categories } = useCategories()
+  const { data: listingsData, isLoading, error } = useListListings()
 
   if (isLoading) {
     return (
@@ -30,22 +24,14 @@ const ListingsPage = () => {
   }
 
   const listings = listingsData?.items || []
-  const totalPages = listingsData?.total_pages || 1
 
   if (listings.length === 0) {
     return (
-      <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4" align="center" style={{ minHeight: "40vh" }} justify="center">
         <Heading size="6">Browse listings</Heading>
-        <ListingsFilter
-          filters={filters}
-          onFiltersChange={setFilters}
-          categories={categories || []}
-        />
-        <Flex align="center" justify="center" style={{ minHeight: "20vh" }}>
-          <Callout.Root color="gray" size="1">
-            <Callout.Text>No listings found</Callout.Text>
-          </Callout.Root>
-        </Flex>
+        <Callout.Root color="gray" size="1">
+          <Callout.Text>No listings found</Callout.Text>
+        </Callout.Root>
       </Flex>
     )
   }
@@ -54,31 +40,10 @@ const ListingsPage = () => {
     <Flex direction="column" gap="4">
       <Heading size="6">Browse listings</Heading>
 
-      <Grid columns="250px 1fr" gap="4">
-        <ListingsFilter
-          filters={filters}
-          onFiltersChange={setFilters}
-          categories={categories || []}
-        />
-
-        <Flex direction="column" gap="4">
-          <Grid
-            columns={{ initial: "1", sm: "2", md: "3" }}
-            gap="4"
-          >
-            {listings.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </Grid>
-
-          {totalPages > 1 && (
-            <Pagination
-              page={filters.page || 1}
-              totalPages={totalPages}
-              onPageChange={(p) => setFilters({ ...filters, page: p })}
-            />
-          )}
-        </Flex>
+      <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
+        {listings.map((listing) => (
+          <ListingCard key={listing.id} listing={listing} />
+        ))}
       </Grid>
     </Flex>
   )
