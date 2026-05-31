@@ -67,8 +67,7 @@ export interface ListingResponse {
   price_cents: number;
   quantity: number;
   seller_id: string;
-  /** @nullable */
-  seller_name?: string | null;
+  seller_name: string;
   status: string;
   title: string;
   updated_at: string;
@@ -127,8 +126,7 @@ export type PaginatedResponseListingResponseItemsItem = {
   price_cents: number;
   quantity: number;
   seller_id: string;
-  /** @nullable */
-  seller_name?: string | null;
+  seller_name: string;
   status: string;
   title: string;
   updated_at: string;
@@ -182,21 +180,77 @@ export interface UpdateListingRequest {
   title?: string | null;
 }
 
+export type ListCategoriesParams = {
+/**
+ * Filter by kind (craft, supply)
+ */
+kind?: string;
+};
+
+export type ListListingsParams = {
+/**
+ * Filter by status (active, draft, paused)
+ */
+status?: string;
+/**
+ * Filter by category UUID
+ */
+category_id?: string;
+/**
+ * Filter by kind (craft, supply)
+ */
+kind?: string;
+/**
+ * Search in title
+ */
+search?: string;
+/**
+ * Sort order: newest, price_asc, price_desc
+ */
+sort?: string;
+/**
+ * Page number
+ */
+page?: number;
+/**
+ * Items per page
+ */
+per_page?: number;
+};
+
+export type SellerListingsParams = {
+/**
+ * Page number
+ */
+page?: number;
+/**
+ * Items per page
+ */
+per_page?: number;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
-export const getListCategoriesUrl = () => {
+export const getListCategoriesUrl = (params?: ListCategoriesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/categories`
+  return stringifiedParams.length > 0 ? `/api/categories?${stringifiedParams}` : `/api/categories`
 }
 
-export const listCategories = async ( options?: RequestInit): Promise<Category[]> => {
+export const listCategories = async (params?: ListCategoriesParams, options?: RequestInit): Promise<Category[]> => {
 
-  return customFetch<Category[]>(getListCategoriesUrl(),
+  return customFetch<Category[]>(getListCategoriesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -209,23 +263,23 @@ export const listCategories = async ( options?: RequestInit): Promise<Category[]
 
 
 
-export const getListCategoriesQueryKey = () => {
+export const getListCategoriesQueryKey = (params?: ListCategoriesParams,) => {
     return [
-    `/api/categories`
+    `/api/categories`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(params?: ListCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListCategoriesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListCategoriesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCategories>>> = ({ signal }) => listCategories({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCategories>>> = ({ signal }) => listCategories(params, { signal, ...requestOptions });
 
 
 
@@ -239,7 +293,7 @@ export type ListCategoriesQueryError = unknown
 
 
 export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
+ params: undefined |  ListCategoriesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listCategories>>,
           TError,
@@ -249,7 +303,7 @@ export function useListCategories<TData = Awaited<ReturnType<typeof listCategori
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
+ params?: ListCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listCategories>>,
           TError,
@@ -259,16 +313,16 @@ export function useListCategories<TData = Awaited<ReturnType<typeof listCategori
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: ListCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: ListCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListCategoriesQueryOptions(options)
+  const queryOptions = getListCategoriesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -281,17 +335,24 @@ export function useListCategories<TData = Awaited<ReturnType<typeof listCategori
 
 
 
-export const getListListingsUrl = () => {
+export const getListListingsUrl = (params?: ListListingsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/listings`
+  return stringifiedParams.length > 0 ? `/api/listings?${stringifiedParams}` : `/api/listings`
 }
 
-export const listListings = async ( options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
+export const listListings = async (params?: ListListingsParams, options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
 
-  return customFetch<PaginatedResponseListingResponse>(getListListingsUrl(),
+  return customFetch<PaginatedResponseListingResponse>(getListListingsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -304,23 +365,23 @@ export const listListings = async ( options?: RequestInit): Promise<PaginatedRes
 
 
 
-export const getListListingsQueryKey = () => {
+export const getListListingsQueryKey = (params?: ListListingsParams,) => {
     return [
-    `/api/listings`
+    `/api/listings`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListListingsQueryOptions = <TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListListingsQueryOptions = <TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(params?: ListListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListListingsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListListingsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listListings>>> = ({ signal }) => listListings({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listListings>>> = ({ signal }) => listListings(params, { signal, ...requestOptions });
 
 
 
@@ -334,7 +395,7 @@ export type ListListingsQueryError = unknown
 
 
 export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
+ params: undefined |  ListListingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listListings>>,
           TError,
@@ -344,7 +405,7 @@ export function useListListings<TData = Awaited<ReturnType<typeof listListings>>
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
+ params?: ListListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listListings>>,
           TError,
@@ -354,16 +415,16 @@ export function useListListings<TData = Awaited<ReturnType<typeof listListings>>
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: ListListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useListListings<TData = Awaited<ReturnType<typeof listListings>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: ListListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListListingsQueryOptions(options)
+  const queryOptions = getListListingsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -440,17 +501,24 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getCreateListingMutationOptions(options), queryClient);
     }
 
-export const getSellerListingsUrl = () => {
+export const getSellerListingsUrl = (params?: SellerListingsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/listings/mine`
+  return stringifiedParams.length > 0 ? `/api/listings/mine?${stringifiedParams}` : `/api/listings/mine`
 }
 
-export const sellerListings = async ( options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
+export const sellerListings = async (params?: SellerListingsParams, options?: RequestInit): Promise<PaginatedResponseListingResponse> => {
 
-  return customFetch<PaginatedResponseListingResponse>(getSellerListingsUrl(),
+  return customFetch<PaginatedResponseListingResponse>(getSellerListingsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -463,23 +531,23 @@ export const sellerListings = async ( options?: RequestInit): Promise<PaginatedR
 
 
 
-export const getSellerListingsQueryKey = () => {
+export const getSellerListingsQueryKey = (params?: SellerListingsParams,) => {
     return [
-    `/api/listings/mine`
+    `/api/listings/mine`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getSellerListingsQueryOptions = <TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getSellerListingsQueryOptions = <TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(params?: SellerListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getSellerListingsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getSellerListingsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof sellerListings>>> = ({ signal }) => sellerListings({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof sellerListings>>> = ({ signal }) => sellerListings(params, { signal, ...requestOptions });
 
 
 
@@ -493,7 +561,7 @@ export type SellerListingsQueryError = void
 
 
 export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
+ params: undefined |  SellerListingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof sellerListings>>,
           TError,
@@ -503,7 +571,7 @@ export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListin
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
+ params?: SellerListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof sellerListings>>,
           TError,
@@ -513,16 +581,16 @@ export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListin
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: SellerListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useSellerListings<TData = Awaited<ReturnType<typeof sellerListings>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: SellerListingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sellerListings>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getSellerListingsQueryOptions(options)
+  const queryOptions = getSellerListingsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

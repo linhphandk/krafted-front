@@ -37,4 +37,11 @@ describe("ListingsPage", () => {
     renderPage()
     expect(await screen.findByText("Browse listings")).toBeInTheDocument()
   })
+
+  it("renders filter bar", async () => {
+    renderPage()
+    expect(await screen.findByRole("tab", { name: /^All/ })).toBeInTheDocument()
+    expect(await screen.findByRole("tab", { name: /^Crafts/ })).toBeInTheDocument()
+    expect(await screen.findByRole("tab", { name: /^Supplies/ })).toBeInTheDocument()
+  })
 })
