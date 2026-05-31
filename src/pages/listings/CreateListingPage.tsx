@@ -14,14 +14,14 @@ import {
   Switch,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-import { useCreateListing, useListCategories, usePublishListing } from "@/api/generated"
+import { useCreateListing, useListCategories } from "@/api/generated"
 import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
-  { value: "Handmade", label: "Handmade" },
-  { value: "New", label: "New" },
-  { value: "Vintage", label: "Vintage" },
-  { value: "Refurbished", label: "Refurbished" },
+  { value: "handmade", label: "Handmade" },
+  { value: "new", label: "New" },
+  { value: "vintage", label: "Vintage" },
+  { value: "refurbished", label: "Refurbished" },
 ] as const
 
 interface CreateListingFormData {
@@ -37,7 +37,6 @@ interface CreateListingFormData {
 const CreateListingPage = () => {
   const navigate = useNavigate()
   const createListing = useCreateListing()
-  const publishListing = usePublishListing()
   const { data: categories } = useListCategories()
 
   const {
@@ -58,13 +57,10 @@ const CreateListingPage = () => {
         description: data.description,
         price_cents: Math.round(parseFloat(data.price) * 100),
         category_id: data.category_id,
-        condition: data.condition,
+        condition: data.condition as CreateListingRequest["condition"],
         quantity: parseInt(data.quantity, 10),
       }
       const listing = await createListing.mutateAsync({ data: payload })
-      if (data.is_active) {
-        await publishListing.mutateAsync({ id: listing.id })
-      }
       navigate(`/listings/${listing.id}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to create listing"
