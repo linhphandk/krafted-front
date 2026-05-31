@@ -1,9 +1,9 @@
-import { Box, Text, TextField } from "@radix-ui/themes"
+import { Box, Text } from "@radix-ui/themes"
 
 interface FormFieldProps {
   label: string
   error?: string
-  children: React.ReactElement<typeof TextField.Root>
+  children: React.ReactNode
 }
 
 const FormField = ({ label, error, children }: FormFieldProps) => {
