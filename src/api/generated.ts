@@ -67,6 +67,8 @@ export interface ListingResponse {
   price_cents: number;
   quantity: number;
   seller_id: string;
+  /** @nullable */
+  seller_name?: string | null;
   status: string;
   title: string;
   updated_at: string;
@@ -125,6 +127,8 @@ export type PaginatedResponseListingResponseItemsItem = {
   price_cents: number;
   quantity: number;
   seller_id: string;
+  /** @nullable */
+  seller_name?: string | null;
   status: string;
   title: string;
   updated_at: string;
