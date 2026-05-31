@@ -97,6 +97,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
 
       <Button
         variant="soft"
+        style={{ cursor: "pointer" }}
         onClick={() => onFiltersChange({ page: 1, status: "active", per_page: 12 })}
       >
         Clear filters
