@@ -70,7 +70,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
         value={filters.category_id || "all"}
         onValueChange={(val) => updateFilter({ category_id: val === "all" ? undefined : val })}
       >
-        <Select.Trigger placeholder="All categories" />
+        <Select.Trigger placeholder="All categories" style={{ cursor: "pointer" }} />
         <Select.Content>
           <Select.Item value="all">All categories</Select.Item>
           {filteredCategories.map((cat) => (
@@ -85,7 +85,7 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
         value={filters.sort || "newest"}
         onValueChange={(val) => updateFilter({ sort: val })}
       >
-        <Select.Trigger placeholder="Sort by" />
+        <Select.Trigger placeholder="Sort by" style={{ cursor: "pointer" }} />
         <Select.Content>
           {SORT_OPTIONS.map((opt) => (
             <Select.Item key={opt.value} value={opt.value}>
