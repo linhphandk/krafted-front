@@ -1,8 +1,8 @@
-# M6 — RBAC & Role Management Pages
+# M10 — RBAC & Role Management Pages
 
 **Deliverable: Role-based access control enforced on the frontend, role management CRUD pages**
 
-**Depends on: M5**
+**Depends on: M9**
 
 ---
 
@@ -113,7 +113,7 @@ hasPermission,
 
 **File**: `src/components/RequirePermission/index.tsx` (update)
 
-Replace the pass-through implementation from M4 with a real permission check:
+Replace the pass-through implementation from M8 with a real permission check:
 
 ```tsx
 import { Flex, Heading, Text, Button } from "@radix-ui/themes"

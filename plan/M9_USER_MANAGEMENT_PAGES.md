@@ -1,8 +1,8 @@
-# M5 — User Management Pages
+# M9 — User Management Pages
 
 **Deliverable: Authenticated users can view users list, user profile, and admins can update/delete users**
 
-**Depends on: M4**
+**Depends on: M8**
 
 ---
 
@@ -346,7 +346,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
 
 **File**: `src/components/Layout/index.tsx` (update)
 
-The dropdown already has a "Profile" link from M4. Wire it to navigate to the current user's profile:
+The dropdown already has a "Profile" link from M8. Wire it to navigate to the current user's profile:
 
 ```tsx
 <DropdownMenu.Item onClick={() => navigate(`/users/${user?.id}`)}>
@@ -354,7 +354,7 @@ The dropdown already has a "Profile" link from M4. Wire it to navigate to the cu
 </DropdownMenu.Item>
 ```
 
-This already works since M4 added this line. Just verify it's correct.
+This already works since M8 added this line. Just verify it's correct.
 
 **Estimated lines**: 0loc (verification only)
 

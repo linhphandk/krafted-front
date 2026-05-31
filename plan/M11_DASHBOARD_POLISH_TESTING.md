@@ -1,8 +1,8 @@
-# M7 — Dashboard, Polish & Testing
+# M11 — Dashboard, Polish & Testing
 
 **Deliverable: Functional dashboard page, error handling improvements, loading states, E2E test scaffolding**
 
-**Depends on: M6**
+**Depends on: M10**
 
 ---
 

@@ -1,4 +1,4 @@
-# M4 — Protected Routes, Current User & Logout
+# M8 — Protected Routes, Current User & Logout
 
 **Deliverable: Protected routes redirect to login when unauthenticated, Layout shows current user, logout works**
 
