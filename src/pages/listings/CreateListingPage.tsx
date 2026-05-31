@@ -14,19 +14,8 @@ import {
   Switch,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-
-const CATEGORIES = [
-  { value: "knitting", label: "Knitting" },
-  { value: "crochet", label: "Crochet" },
-  { value: "jewelry", label: "Jewelry" },
-  { value: "pottery", label: "Pottery" },
-  { value: "woodworking", label: "Woodworking" },
-  { value: "sewing", label: "Sewing" },
-  { value: "yarn", label: "Yarn" },
-  { value: "fabric", label: "Fabric" },
-  { value: "beads", label: "Beads" },
-  { value: "tools", label: "Tools" },
-] as const
+import { useCreateListing, useListCategories } from "@/api/generated"
+import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
   { value: "handmade", label: "Handmade" },
@@ -47,6 +36,8 @@ interface CreateListingFormData {
 
 const CreateListingPage = () => {
   const navigate = useNavigate()
+  const createListing = useCreateListing()
+  const { data: categories } = useListCategories()
 
   const {
     register,
@@ -59,12 +50,20 @@ const CreateListingPage = () => {
     defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "" },
   })
 
-  async function onSubmit(_data: CreateListingFormData) {
+  async function onSubmit(data: CreateListingFormData) {
     try {
-      // TODO: replace with API call
-      navigate("/listings")
+      const payload: CreateListingRequest = {
+        title: data.title,
+        description: data.description,
+        price_cents: Math.round(parseFloat(data.price) * 100),
+        category_id: data.category_id,
+        condition: data.condition as CreateListingRequest["condition"],
+        quantity: parseInt(data.quantity, 10),
+      }
+      const listing = await createListing.mutateAsync({ data: payload })
+      navigate(`/listings/${listing.id}`)
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create listing"
+      const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to create listing"
       setError("root", { message })
     }
   }
@@ -139,9 +138,9 @@ const CreateListingPage = () => {
                         <Select.Root value={field.value} onValueChange={field.onChange}>
                           <Select.Trigger placeholder="Select category" />
                           <Select.Content>
-                            {CATEGORIES.map((c) => (
-                              <Select.Item key={c.value} value={c.value}>
-                                {c.label}
+                            {(categories ?? []).map((c) => (
+                              <Select.Item key={c.id} value={c.id}>
+                                {c.name}
                               </Select.Item>
                             ))}
                           </Select.Content>
