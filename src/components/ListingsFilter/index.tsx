@@ -54,9 +54,9 @@ const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilter
         onValueChange={(val) => updateFilter({ kind: val === "all" ? undefined : val })}
       >
         <Tabs.List>
-          <Tabs.Trigger value="all">All</Tabs.Trigger>
-          <Tabs.Trigger value="craft">Crafts</Tabs.Trigger>
-          <Tabs.Trigger value="supply">Supplies</Tabs.Trigger>
+          <Tabs.Trigger value="all" style={{ cursor: "pointer" }}>All</Tabs.Trigger>
+          <Tabs.Trigger value="craft" style={{ cursor: "pointer" }}>Crafts</Tabs.Trigger>
+          <Tabs.Trigger value="supply" style={{ cursor: "pointer" }}>Supplies</Tabs.Trigger>
         </Tabs.List>
       </Tabs.Root>
 
