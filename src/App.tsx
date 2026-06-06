@@ -6,6 +6,7 @@ import RegisterPage from "./pages/auth/RegisterPage"
 import LoginPage from "./pages/auth/LoginPage"
 import DashboardPage from "./pages/DashboardPage"
 import CreateListingPage from "./pages/listings/CreateListingPage"
+import EditListingPage from "./pages/listings/EditListingPage"
 import MyListingsPage from "./pages/listings/MyListingsPage"
 import ListingDetailPage from "./pages/listings/ListingDetailPage"
 import ListingsPage from "./pages/listings/ListingsPage"
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/listings/mine" element={<MyListingsPage />} />
             <Route path="/listings/new" element={<CreateListingPage />} />
+            <Route path="/listings/:id/edit" element={<EditListingPage />} />
             <Route path="/listings/:id" element={<ListingDetailPage />} />
           </Route>
         </Route>
