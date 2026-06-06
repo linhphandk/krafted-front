@@ -14,6 +14,7 @@ interface ListingCardListing {
   price_cents: number
   condition: string
   category_name?: string | null
+  images?: { url: string }[]
 }
 
 interface ListingCardProps {
@@ -35,7 +36,15 @@ const ListingCard = ({ listing }: ListingCardProps) => {
           align="center"
           justify="center"
         >
-          <Text size="2" color="gray">No image</Text>
+          {listing.images && listing.images.length > 0 ? (
+            <img
+              src={listing.images[0].url}
+              alt={listing.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-2)" }}
+            />
+          ) : (
+            <Text size="2" color="gray">No image</Text>
+          )}
         </Flex>
         <Flex direction="column" gap="1" mt="2">
           <Heading size="3">{listing.title}</Heading>
