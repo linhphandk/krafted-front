@@ -52,7 +52,7 @@ const MyListingsPage = () => {
     ...(statusFilter !== "All" ? { status: statusFilter } : {}),
   } as SellerListingsParams & { status?: string }
 
-  const { data, isFetching, error } = useSellerListings(params, {
+  const { data, isFetching, isError } = useSellerListings(params, {
     query: { placeholderData: keepPreviousData },
   })
 
@@ -110,7 +110,7 @@ const MyListingsPage = () => {
     )
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Flex direction="column" align="center" gap="3" style={{ minHeight: "40vh" }} justify="center">
         <Callout.Root color="red" size="1">
