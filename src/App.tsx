@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router"
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router"
+import ErrorBoundary from "./components/ErrorBoundary"
 import RequireAuth from "./components/RequireAuth"
 import Layout from "./components/Layout"
 import RegisterPage from "./pages/auth/RegisterPage"
@@ -23,10 +24,18 @@ export default function App() {
           }
         >
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/listings" element={<ListingsPage />} />
-          <Route path="/listings/new" element={<CreateListingPage />} />
-          <Route path="/listings/:id" element={<ListingDetailPage />} />
+          <Route
+            element={
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            }
+          >
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/listings/new" element={<CreateListingPage />} />
+            <Route path="/listings/:id" element={<ListingDetailPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
