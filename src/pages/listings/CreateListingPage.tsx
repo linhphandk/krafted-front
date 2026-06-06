@@ -40,7 +40,7 @@ const CreateListingPage = () => {
   const createListing = useCreateListing()
   const { data: categories } = useListCategories()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [selectedFiles, setSelectedFiles] = useState<{ file: File; preview: string }[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
   const {
@@ -56,12 +56,19 @@ const CreateListingPage = () => {
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])
-    setSelectedFiles((prev) => [...prev, ...files])
+    setSelectedFiles((prev) => {
+      prev.forEach((f) => URL.revokeObjectURL(f.preview))
+      const next = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }))
+      return next
+    })
     e.target.value = ""
   }
 
   function removeFile(index: number) {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+    setSelectedFiles((prev) => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
   }
 
   async function onSubmit(data: CreateListingFormData) {
@@ -80,7 +87,7 @@ const CreateListingPage = () => {
       if (selectedFiles.length > 0) {
         setIsUploading(true)
         const formData = new FormData()
-        selectedFiles.forEach((f) => formData.append("images", f))
+        selectedFiles.forEach(({ file }) => formData.append("images", file))
         await uploadImages(listing.id, { body: formData })
       }
 
@@ -211,14 +218,30 @@ const CreateListingPage = () => {
                     Choose images
                   </Button>
                   {selectedFiles.length > 0 && (
-                    <Flex direction="column" gap="1">
+                    <Flex gap="2" wrap="wrap">
                       {selectedFiles.map((f, i) => (
-                        <Flex key={`${f.name}-${i}`} align="center" gap="2">
-                          <Text size="1" style={{ flex: 1 }}>{f.name}</Text>
-                          <Button type="button" size="1" variant="ghost" color="red" onClick={() => removeFile(i)}>
+                        <Box key={f.file.name + i} style={{ position: "relative", width: 80, height: 80 }}>
+                          <img
+                            src={f.preview}
+                            alt={f.file.name}
+                            style={{
+                              width: 80,
+                              height: 80,
+                              objectFit: "cover",
+                              borderRadius: "var(--radius-2)",
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            size="1"
+                            variant="solid"
+                            color="red"
+                            style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", lineHeight: 1, padding: 0, fontSize: 12 }}
+                            onClick={() => removeFile(i)}
+                          >
                             ×
                           </Button>
-                        </Flex>
+                        </Box>
                       ))}
                     </Flex>
                   )}
