@@ -1,6 +1,7 @@
-import { useParams, Link } from "react-router"
-import { Card, Flex, Heading, Text, Badge, Spinner, Callout } from "@radix-ui/themes"
+import { useParams, Link, useNavigate } from "react-router"
+import { Button, Card, Flex, Heading, Text, Badge, Spinner, Callout } from "@radix-ui/themes"
 import { useGetListing } from "@/api/generated"
+import { useAuth } from "@/context"
 
 const CONDITION_COLORS: Record<string, "purple" | "green" | "orange" | "blue"> = {
   Handmade: "purple",
@@ -15,7 +16,10 @@ function formatPrice(cents: number): string {
 
 const ListingDetailPage = () => {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const { data: listing, isLoading } = useGetListing(id!)
+  const isOwner = user?.id === listing?.seller_id
 
   if (isLoading) {
     return (
@@ -54,6 +58,12 @@ const ListingDetailPage = () => {
       </Flex>
 
       <Text size="6" weight="bold">{formatPrice(listing.price_cents)}</Text>
+
+      {isOwner && (
+        <Flex gap="2">
+          <Button onClick={() => navigate(`/listings/${listing.id}/edit`)}>Edit</Button>
+        </Flex>
+      )}
 
       <Card size="2">
         <Text size="3" style={{ whiteSpace: "pre-wrap" }}>

@@ -56,6 +56,15 @@ export interface ErrorResponse {
   message: string;
 }
 
+export interface ImageResponse {
+  created_at: string;
+  id: string;
+  listing_id: string;
+  position: number;
+  thumbnail_url: string;
+  url: string;
+}
+
 export interface ListingResponse {
   category_id: string;
   /** @nullable */
@@ -67,7 +76,8 @@ export interface ListingResponse {
   price_cents: number;
   quantity: number;
   seller_id: string;
-  seller_name: string;
+  /** @nullable */
+  seller_name?: string | null;
   status: string;
   title: string;
   updated_at: string;
@@ -126,7 +136,8 @@ export type PaginatedResponseListingResponseItemsItem = {
   price_cents: number;
   quantity: number;
   seller_id: string;
-  seller_name: string;
+  /** @nullable */
+  seller_name?: string | null;
   status: string;
   title: string;
   updated_at: string;
@@ -163,6 +174,10 @@ export interface RegisterResponse {
   /** @minimum 0 */
   expires_in: number;
   user: UserResponse;
+}
+
+export interface ReorderImagesRequest {
+  image_ids: string[];
 }
 
 export interface UpdateListingRequest {
@@ -825,6 +840,296 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getUpdateListingMutationOptions(options), queryClient);
+    }
+
+export const getListImagesUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}/images`
+}
+
+export const listImages = async (id: string, options?: RequestInit): Promise<ImageResponse[]> => {
+
+  return customFetch<ImageResponse[]>(getListImagesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListImagesQueryKey = (id: string,) => {
+    return [
+    `/api/listings/${id}/images`
+    ] as const;
+    }
+
+
+export const getListImagesQueryOptions = <TData = Awaited<ReturnType<typeof listImages>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListImagesQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listImages>>> = ({ signal }) => listImages(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListImagesQueryResult = NonNullable<Awaited<ReturnType<typeof listImages>>>
+export type ListImagesQueryError = unknown
+
+
+export function useListImages<TData = Awaited<ReturnType<typeof listImages>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listImages>>,
+          TError,
+          Awaited<ReturnType<typeof listImages>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListImages<TData = Awaited<ReturnType<typeof listImages>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listImages>>,
+          TError,
+          Awaited<ReturnType<typeof listImages>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListImages<TData = Awaited<ReturnType<typeof listImages>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListImages<TData = Awaited<ReturnType<typeof listImages>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listImages>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListImagesQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUploadImagesUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}/images`
+}
+
+export const uploadImages = async (id: string, options?: RequestInit): Promise<ImageResponse[]> => {
+
+  return customFetch<ImageResponse[]>(getUploadImagesUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getUploadImagesMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadImages>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadImages>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['uploadImages'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadImages>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  uploadImages(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadImagesMutationResult = NonNullable<Awaited<ReturnType<typeof uploadImages>>>
+
+    export type UploadImagesMutationError = void
+
+    export const useUploadImages = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadImages>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof uploadImages>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getUploadImagesMutationOptions(options), queryClient);
+    }
+
+export const getReorderImagesUrl = (id: string,) => {
+
+
+
+
+  return `/api/listings/${id}/images/reorder`
+}
+
+export const reorderImages = async (id: string,
+    reorderImagesRequest: ReorderImagesRequest, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getReorderImagesUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(reorderImagesRequest)
+  }
+);}
+
+
+
+
+export const getReorderImagesMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reorderImages>>, TError,{id: string;data: ReorderImagesRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reorderImages>>, TError,{id: string;data: ReorderImagesRequest}, TContext> => {
+
+const mutationKey = ['reorderImages'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reorderImages>>, {id: string;data: ReorderImagesRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reorderImages(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReorderImagesMutationResult = NonNullable<Awaited<ReturnType<typeof reorderImages>>>
+    export type ReorderImagesMutationBody = ReorderImagesRequest
+    export type ReorderImagesMutationError = void
+
+    export const useReorderImages = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reorderImages>>, TError,{id: string;data: ReorderImagesRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof reorderImages>>,
+        TError,
+        {id: string;data: ReorderImagesRequest},
+        TContext
+      > => {
+      return useMutation(getReorderImagesMutationOptions(options), queryClient);
+    }
+
+export const getDeleteImageUrl = (id: string,
+    imageId: string,) => {
+
+
+
+
+  return `/api/listings/${id}/images/${imageId}`
+}
+
+export const deleteImage = async (id: string,
+    imageId: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteImageUrl(id,imageId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteImageMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{id: string;imageId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{id: string;imageId: string}, TContext> => {
+
+const mutationKey = ['deleteImage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteImage>>, {id: string;imageId: string}> = (props) => {
+          const {id,imageId} = props ?? {};
+
+          return  deleteImage(id,imageId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteImageMutationResult = NonNullable<Awaited<ReturnType<typeof deleteImage>>>
+
+    export type DeleteImageMutationError = void
+
+    export const useDeleteImage = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{id: string;imageId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteImage>>,
+        TError,
+        {id: string;imageId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteImageMutationOptions(options), queryClient);
     }
 
 export const getPauseListingUrl = (id: string,) => {

@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router"
 import { Theme } from "@radix-ui/themes"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getGetListingQueryOptions } from "@/api/generated"
+import { AuthProvider } from "@/context/AuthContext"
 import ListingDetailPage from "./ListingDetailPage"
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -19,13 +20,15 @@ beforeAll(() => {
 function renderPage(listingId = "test-id") {
   return render(
     <QueryClientProvider client={queryClient}>
-      <Theme>
-        <MemoryRouter initialEntries={[`/listings/${listingId}`]}>
-          <Routes>
-            <Route path="/listings/:id" element={<ListingDetailPage />} />
-          </Routes>
-        </MemoryRouter>
-      </Theme>
+      <AuthProvider>
+        <Theme>
+          <MemoryRouter initialEntries={[`/listings/${listingId}`]}>
+            <Routes>
+              <Route path="/listings/:id" element={<ListingDetailPage />} />
+            </Routes>
+          </MemoryRouter>
+        </Theme>
+      </AuthProvider>
     </QueryClientProvider>,
   )
 }
