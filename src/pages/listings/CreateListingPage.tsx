@@ -56,11 +56,8 @@ const CreateListingPage = () => {
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])
-    setSelectedFiles((prev) => {
-      prev.forEach((f) => URL.revokeObjectURL(f.preview))
-      const next = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }))
-      return next
-    })
+    const next = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }))
+    setSelectedFiles((prev) => [...prev, ...next])
     e.target.value = ""
   }
 
@@ -87,7 +84,7 @@ const CreateListingPage = () => {
       if (selectedFiles.length > 0) {
         setIsUploading(true)
         const formData = new FormData()
-        selectedFiles.forEach(({ file }) => formData.append("images", file))
+        selectedFiles.forEach(({ file }) => formData.append("files", file))
         await uploadImages(listing.id, { body: formData })
       }
 
