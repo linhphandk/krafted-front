@@ -1,3 +1,4 @@
+import { useRef, useState } from "react"
 import { useNavigate } from "react-router"
 import { useForm, Controller } from "react-hook-form"
 import {
@@ -14,7 +15,7 @@ import {
   Switch,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-import { useCreateListing, useListCategories } from "@/api/generated"
+import { useCreateListing, useListCategories, uploadImages } from "@/api/generated"
 import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
@@ -38,6 +39,9 @@ const CreateListingPage = () => {
   const navigate = useNavigate()
   const createListing = useCreateListing()
   const { data: categories } = useListCategories()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -49,6 +53,16 @@ const CreateListingPage = () => {
     mode: "onChange",
     defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "" },
   })
+
+  function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || [])
+    setSelectedFiles((prev) => [...prev, ...files])
+    e.target.value = ""
+  }
+
+  function removeFile(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+  }
 
   async function onSubmit(data: CreateListingFormData) {
     try {
@@ -62,10 +76,20 @@ const CreateListingPage = () => {
         status: data.is_active ? "active" : "draft",
       } as CreateListingRequest & { status: string }
       const listing = await createListing.mutateAsync({ data: payload })
+
+      if (selectedFiles.length > 0) {
+        setIsUploading(true)
+        const formData = new FormData()
+        selectedFiles.forEach((f) => formData.append("images", f))
+        await uploadImages(listing.id, { body: formData })
+      }
+
       navigate(`/listings/${listing.id}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to create listing"
       setError("root", { message })
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -173,6 +197,34 @@ const CreateListingPage = () => {
                 </Box>
               </Flex>
 
+              <FormField label="Images">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFiles}
+                />
+                <Flex direction="column" gap="2">
+                  <Button type="button" variant="soft" onClick={() => fileInputRef.current?.click()}>
+                    Choose images
+                  </Button>
+                  {selectedFiles.length > 0 && (
+                    <Flex direction="column" gap="1">
+                      {selectedFiles.map((f, i) => (
+                        <Flex key={`${f.name}-${i}`} align="center" gap="2">
+                          <Text size="1" style={{ flex: 1 }}>{f.name}</Text>
+                          <Button type="button" size="1" variant="ghost" color="red" onClick={() => removeFile(i)}>
+                            ×
+                          </Button>
+                        </Flex>
+                      ))}
+                    </Flex>
+                  )}
+                </Flex>
+              </FormField>
+
               <Controller
                 name="is_active"
                 control={control}
@@ -189,8 +241,8 @@ const CreateListingPage = () => {
                 <Button variant="soft" onClick={() => navigate(-1)}>
                   Cancel
                 </Button>
-                <Button type="submit" loading={isSubmitting}>
-                  Create listing
+                <Button type="submit" loading={isSubmitting || isUploading}>
+                  {isUploading ? "Uploading images..." : "Create listing"}
                 </Button>
               </Flex>
             </Flex>
