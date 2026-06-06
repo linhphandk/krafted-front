@@ -17,7 +17,7 @@ const SORT_OPTIONS = [
 
 const ListingsFilter = ({ filters, onFiltersChange, categories }: ListingsFilterProps) => {
   const [searchValue, setSearchValue] = useState(filters.search || "")
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     setSearchValue(filters.search || "")
