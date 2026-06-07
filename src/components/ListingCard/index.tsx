@@ -1,6 +1,5 @@
 import { Card, Flex, Heading, Text, Badge } from "@radix-ui/themes"
 import { Link } from "react-router"
-import { getImageUrl } from "@/utils/image"
 
 const CONDITION_COLORS: Record<string, "purple" | "green" | "orange" | "blue"> = {
   Handmade: "purple",
@@ -39,7 +38,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         >
           {listing.images && listing.images.length > 0 ? (
             <img
-              src={getImageUrl(listing.images[0].url)}
+              src={listing.images[0].url}
               alt={listing.title}
               style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-2)" }}
             />
