@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams, useNavigate } from "react-router"
 import { useForm, Controller } from "react-hook-form"
 import {
@@ -8,6 +8,7 @@ import {
   TextField,
   TextArea,
   Button,
+  Text,
   Flex,
   Heading,
   Callout,
@@ -15,7 +16,7 @@ import {
   Spinner,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-import { useGetListing, useUpdateListing, useListCategories } from "@/api/generated"
+import { useGetListing, useUpdateListing, useListCategories, uploadImages, deleteImage } from "@/api/generated"
 import type { UpdateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
@@ -51,6 +52,9 @@ interface EditListingFormData {
 const EditListingPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [newFiles, setNewFiles] = useState<{ file: File; preview: string }[]>([])
+  const [isUploading, setIsUploading] = useState(false)
 
   const { data: listing, isLoading: isListingLoading, isError: isListingError } = useGetListing(id!)
   const updateListing = useUpdateListing()
@@ -75,6 +79,29 @@ const EditListingPage = () => {
       status: "",
     },
   })
+
+  function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || [])
+    const next = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }))
+    setNewFiles((prev) => [...prev, ...next])
+    e.target.value = ""
+  }
+
+  function removeNewFile(index: number) {
+    setNewFiles((prev) => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
+  }
+
+  async function handleDeleteImage(imageId: string) {
+    if (!window.confirm("Delete this image?")) return
+    try {
+      await deleteImage(id!, imageId)
+    } catch {
+      // handled by error state
+    }
+  }
 
   useEffect(() => {
     if (!listing) return
@@ -101,10 +128,20 @@ const EditListingPage = () => {
         status: data.status,
       }
       await updateListing.mutateAsync({ id: id!, data: payload })
+
+      if (newFiles.length > 0) {
+        setIsUploading(true)
+        const formData = new FormData()
+        newFiles.forEach(({ file }) => formData.append("files", file))
+        await uploadImages(id!, { body: formData })
+      }
+
       navigate(`/listings/${id}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to update listing"
       setError("root", { message })
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -256,12 +293,74 @@ const EditListingPage = () => {
                 )}
               />
 
+              <FormField label="Images">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFiles}
+                />
+                <Flex direction="column" gap="2">
+                  {listing.images && listing.images.length > 0 && (
+                    <Flex gap="2" wrap="wrap">
+                      {listing.images.map((img) => (
+                        <Box key={img.id} style={{ position: "relative", width: 80, height: 80 }}>
+                          <img
+                            src={img.url}
+                            alt=""
+                            style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "var(--radius-2)" }}
+                          />
+                          <Button
+                            type="button"
+                            size="1"
+                            variant="solid"
+                            color="red"
+                            style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", lineHeight: 1, padding: 0, fontSize: 12 }}
+                            onClick={() => handleDeleteImage(img.id)}
+                          >
+                            ×
+                          </Button>
+                        </Box>
+                      ))}
+                    </Flex>
+                  )}
+                  <Button type="button" variant="soft" onClick={() => fileInputRef.current?.click()}>
+                    {newFiles.length > 0 ? "Add more images" : "Add images"}
+                  </Button>
+                  {newFiles.length > 0 && (
+                    <Flex gap="2" wrap="wrap">
+                      {newFiles.map((f, i) => (
+                        <Box key={f.file.name + i} style={{ position: "relative", width: 80, height: 80 }}>
+                          <img
+                            src={f.preview}
+                            alt={f.file.name}
+                            style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "var(--radius-2)" }}
+                          />
+                          <Button
+                            type="button"
+                            size="1"
+                            variant="solid"
+                            color="red"
+                            style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", lineHeight: 1, padding: 0, fontSize: 12 }}
+                            onClick={() => removeNewFile(i)}
+                          >
+                            ×
+                          </Button>
+                        </Box>
+                      ))}
+                    </Flex>
+                  )}
+                </Flex>
+              </FormField>
+
               <Flex gap="3" justify="end">
                 <Button variant="soft" onClick={() => navigate(-1)}>
                   Cancel
                 </Button>
-                <Button type="submit" loading={isSubmitting}>
-                  Save changes
+                <Button type="submit" loading={isSubmitting || isUploading}>
+                  {isUploading ? "Uploading images..." : "Save changes"}
                 </Button>
               </Flex>
             </Flex>
