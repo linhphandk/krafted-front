@@ -1,18 +1,20 @@
+const BASE = import.meta.env.VITE_IMAGE_BASE_URL || "http://localhost:9000"
+
+const INTERNAL_HOSTS = ["minio", "storage"]
+
 export function getImageUrl(url: string): string {
   if (!url) return url
 
-  const base = import.meta.env.VITE_IMAGE_BASE_URL || "http://localhost:9000"
-
   if (url.startsWith("/")) {
-    return `${base}${url}`
+    return `${BASE}${url}`
   }
 
-  try {
-    const parsed = new URL(url)
-    if (parsed.hostname === "minio" || parsed.hostname === "storage") {
-      return `${base}${parsed.pathname}${parsed.search}${parsed.hash}`
+  if (INTERNAL_HOSTS.some((h) => url.startsWith(`http://${h}/`) || url.startsWith(`https://${h}/`))) {
+    const pathStart = url.indexOf("/", url.indexOf("://") + 3)
+    if (pathStart !== -1) {
+      return `${BASE}${url.slice(pathStart)}`
     }
-  } catch {}
+  }
 
   return url
 }

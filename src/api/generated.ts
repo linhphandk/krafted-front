@@ -42,16 +42,6 @@ export const ListingCondition = {
   Refurbished: 'Refurbished',
 } as const;
 
-export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
-
-
-export const ListingStatus = {
-  Draft: 'Draft',
-  Active: 'Active',
-  Paused: 'Paused',
-  Closed: 'Closed',
-} as const;
-
 export interface CreateListingRequest {
   category_id: string;
   condition: ListingCondition;
@@ -59,7 +49,6 @@ export interface CreateListingRequest {
   price_cents: number;
   /** @nullable */
   quantity?: number | null;
-  status?: ListingStatus;
   title: string;
 }
 
@@ -102,6 +91,16 @@ export const ListingSort = {
   newest: 'newest',
   price_asc: 'price_asc',
   price_desc: 'price_desc',
+} as const;
+
+export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
+
+
+export const ListingStatus = {
+  Draft: 'Draft',
+  Active: 'Active',
+  Paused: 'Paused',
+  Closed: 'Closed',
 } as const;
 
 export interface LoginRequest {
