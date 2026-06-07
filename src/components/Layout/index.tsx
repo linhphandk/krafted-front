@@ -38,9 +38,13 @@ export default function Layout() {
               <DropdownMenu.Item onClick={() => navigate("/listings/mine")} style={itemStyle}>
                 My Listings
               </DropdownMenu.Item>
+              <DropdownMenu.Item onClick={() => navigate("/favorites")} style={itemStyle}>
+                Saved Listings
+              </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/listings/new")} style={itemStyle}>
                 Create Listing
               </DropdownMenu.Item>
+              <DropdownMenu.Separator />
             </DropdownMenu.Content>
           </DropdownMenu.Root>
           <Heading size="4">Krafted</Heading>
