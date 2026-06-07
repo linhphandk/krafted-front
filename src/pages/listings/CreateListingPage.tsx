@@ -1,3 +1,4 @@
+import { useRef, useState } from "react"
 import { useNavigate } from "react-router"
 import { useForm, Controller } from "react-hook-form"
 import {
@@ -14,7 +15,7 @@ import {
   Switch,
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
-import { useCreateListing, useListCategories } from "@/api/generated"
+import { useCreateListing, useListCategories, uploadImages } from "@/api/generated"
 import type { CreateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
@@ -38,6 +39,9 @@ const CreateListingPage = () => {
   const navigate = useNavigate()
   const createListing = useCreateListing()
   const { data: categories } = useListCategories()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFiles, setSelectedFiles] = useState<{ file: File; preview: string }[]>([])
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -49,6 +53,20 @@ const CreateListingPage = () => {
     mode: "onChange",
     defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "" },
   })
+
+  function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || [])
+    const next = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }))
+    setSelectedFiles((prev) => [...prev, ...next])
+    e.target.value = ""
+  }
+
+  function removeFile(index: number) {
+    setSelectedFiles((prev) => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
+  }
 
   async function onSubmit(data: CreateListingFormData) {
     try {
@@ -62,10 +80,20 @@ const CreateListingPage = () => {
         status: data.is_active ? "active" : "draft",
       } as CreateListingRequest & { status: string }
       const listing = await createListing.mutateAsync({ data: payload })
+
+      if (selectedFiles.length > 0) {
+        setIsUploading(true)
+        const formData = new FormData()
+        selectedFiles.forEach(({ file }) => formData.append("files", file))
+        await uploadImages(listing.id, { body: formData })
+      }
+
       navigate(`/listings/${listing.id}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : (err as { error?: string })?.error || "Failed to create listing"
       setError("root", { message })
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -173,6 +201,50 @@ const CreateListingPage = () => {
                 </Box>
               </Flex>
 
+              <FormField label="Images">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFiles}
+                />
+                <Flex direction="column" gap="2">
+                  <Button type="button" variant="soft" onClick={() => fileInputRef.current?.click()}>
+                    Choose images
+                  </Button>
+                  {selectedFiles.length > 0 && (
+                    <Flex gap="2" wrap="wrap">
+                      {selectedFiles.map((f, i) => (
+                        <Box key={f.file.name + i} style={{ position: "relative", width: 80, height: 80 }}>
+                          <img
+                            src={f.preview}
+                            alt={f.file.name}
+                            style={{
+                              width: 80,
+                              height: 80,
+                              objectFit: "cover",
+                              borderRadius: "var(--radius-2)",
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            size="1"
+                            variant="solid"
+                            color="red"
+                            style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", lineHeight: 1, padding: 0, fontSize: 12 }}
+                            onClick={() => removeFile(i)}
+                          >
+                            ×
+                          </Button>
+                        </Box>
+                      ))}
+                    </Flex>
+                  )}
+                </Flex>
+              </FormField>
+
               <Controller
                 name="is_active"
                 control={control}
@@ -189,8 +261,8 @@ const CreateListingPage = () => {
                 <Button variant="soft" onClick={() => navigate(-1)}>
                   Cancel
                 </Button>
-                <Button type="submit" loading={isSubmitting}>
-                  Create listing
+                <Button type="submit" loading={isSubmitting || isUploading}>
+                  {isUploading ? "Uploading images..." : "Create listing"}
                 </Button>
               </Flex>
             </Flex>

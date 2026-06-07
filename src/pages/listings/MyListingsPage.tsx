@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query"
 import {
+  Box,
   Button,
   Callout,
   Flex,
@@ -159,6 +160,7 @@ const MyListingsPage = () => {
           <Table.Root variant="surface">
             <Table.Header>
               <Table.Row>
+                <Table.ColumnHeaderCell style={{ width: 60 }}>Image</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Price</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
@@ -171,6 +173,17 @@ const MyListingsPage = () => {
             <Table.Body>
               {listings.map((listing) => (
                 <Table.Row key={listing.id}>
+                  <Table.Cell>
+                    {listing.images && listing.images.length > 0 ? (
+                      <img
+                        src={listing.images[0].thumbnail_url || listing.images[0].url}
+                        alt=""
+                        style={{ width: 40, height: 40, objectFit: "cover", borderRadius: "var(--radius-2)" }}
+                      />
+                    ) : (
+                      <Box style={{ width: 40, height: 40, background: "var(--gray-a3)", borderRadius: "var(--radius-2)" }} />
+                    )}
+                  </Table.Cell>
                   <Table.Cell>
                     <Link to={`/listings/${listing.id}`} style={{ textDecoration: "none" }}>
                       <Text weight="medium">{listing.title}</Text>

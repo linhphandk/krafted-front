@@ -59,6 +59,19 @@ const ListingDetailPage = () => {
 
       <Text size="6" weight="bold">{formatPrice(listing.price_cents)}</Text>
 
+      {listing.images && listing.images.length > 0 && (
+        <Flex gap="2" wrap="wrap">
+          {listing.images.map((img) => (
+            <img
+              key={img.id}
+              src={img.url}
+              alt={listing.title}
+              style={{ width: 200, height: 200, objectFit: "cover", borderRadius: "var(--radius-2)" }}
+            />
+          ))}
+        </Flex>
+      )}
+
       {isOwner && (
         <Flex gap="2">
           <Button onClick={() => navigate(`/listings/${listing.id}/edit`)}>Edit</Button>
