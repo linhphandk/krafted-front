@@ -1,6 +1,7 @@
+import { useState } from "react"
 import { useParams, Link, useNavigate } from "react-router"
 import { Button, Card, Flex, Heading, Text, Badge, Spinner, Callout } from "@radix-ui/themes"
-import { useGetListing, useAddFavorite, useRemoveFavorite, getListFavoritesQueryKey, useListFavorites } from "@/api/generated"
+import { useGetListing, useAddFavorite, useRemoveFavorite, getListFavoritesQueryKey } from "@/api/generated"
 import { useAuth } from "@/context"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -21,10 +22,8 @@ const ListingDetailPage = () => {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   const { data: listing, isLoading } = useGetListing(id!)
-  const { data: favData } = useListFavorites({ per_page: 100 })
   const isOwner = user?.id === listing?.seller_id
-
-  const isFavorited = favData?.items?.some((f) => f.listing_id === id) ?? false
+  const [isFavorited, setIsFavorited] = useState(false)
 
   const addFav = useAddFavorite({
     mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey() }) },
@@ -35,9 +34,19 @@ const ListingDetailPage = () => {
 
   async function toggleFavorite() {
     if (isFavorited) {
-      await removeFav.mutateAsync({ listingId: id! })
+      setIsFavorited(false)
+      try {
+        await removeFav.mutateAsync({ listingId: id! })
+      } catch {
+        setIsFavorited(true)
+      }
     } else {
-      await addFav.mutateAsync({ listingId: id! })
+      setIsFavorited(true)
+      try {
+        await addFav.mutateAsync({ listingId: id! })
+      } catch {
+        setIsFavorited(false)
+      }
     }
   }
 
