@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
 import { useCreateListing, useListCategories, uploadImages } from "@/api/generated"
-import type { CreateListingRequest } from "@/api/generated"
+import { CreateListingRequest, ListingStatus } from "@/api/generated"
 
 const CONDITIONS = [
   { value: "Handmade", label: "Handmade" },
@@ -77,8 +77,8 @@ const CreateListingPage = () => {
         category_id: data.category_id,
         condition: data.condition,
         quantity: parseInt(data.quantity, 10),
-        status: data.is_active ? "active" : "draft",
-      } as CreateListingRequest & { status: string }
+        status: data.is_active ? ListingStatus.Active : ListingStatus.Draft,
+      }
       const listing = await createListing.mutateAsync({ data: payload })
 
       if (selectedFiles.length > 0) {
