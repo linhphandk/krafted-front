@@ -175,6 +175,7 @@ export interface RegisterResponse {
   access_token: string;
   /** @minimum 0 */
   expires_in: number;
+  refresh_token: string;
   user: UserResponse;
 }
 
