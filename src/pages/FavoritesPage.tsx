@@ -1,16 +1,12 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import { keepPreviousData } from "@tanstack/react-query"
-import { Badge, Box, Button, Callout, Flex, Heading, Spinner, Table, Text } from "@radix-ui/themes"
+import { Button, Callout, Card, Flex, Grid, Heading, Spinner, Text } from "@radix-ui/themes"
 import { useListFavorites } from "@/api/generated"
 import Pagination from "@/components/Pagination"
 
 function formatPrice(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString()
 }
 
 const FavoritesPage = () => {
@@ -58,53 +54,36 @@ const FavoritesPage = () => {
         </Flex>
       ) : (
         <>
-          <Table.Root variant="surface">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell style={{ width: 60 }}>Image</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Price</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Seller</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Saved on</Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {items.map((fav) => (
-                <Table.Row key={fav.id}>
-                  <Table.Cell>
+          <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
+            {items.map((fav) => (
+              <Link key={fav.id} to={`/listings/${fav.listing_id}`} style={{ textDecoration: "none" }}>
+                <Card size="1">
+                  <Flex
+                    direction="column"
+                    gap="2"
+                    style={{ height: 200 }}
+                    align="center"
+                    justify="center"
+                  >
                     {fav.image_url ? (
                       <img
                         src={fav.image_url}
-                        alt=""
-                        style={{ width: 40, height: 40, objectFit: "cover", borderRadius: "var(--radius-2)" }}
+                        alt={fav.title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-2)" }}
                       />
                     ) : (
-                      <Box
-                        style={{ width: 40, height: 40, background: "var(--gray-a3)", borderRadius: "var(--radius-2)" }}
-                      />
+                      <Text size="2" color="gray">No image</Text>
                     )}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link to={`/listings/${fav.listing_id}`} style={{ textDecoration: "none" }}>
-                      <Text weight="medium">{fav.title}</Text>
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>{formatPrice(fav.price_cents)}</Table.Cell>
-                  <Table.Cell>
-                    <Text size="2">{fav.seller_name}</Text>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge size="1" color={fav.status === "Active" ? "green" : "gray"}>
-                      {fav.status}
-                    </Badge>
-                  </Table.Cell>
-                  <Table.Cell>{formatDate(fav.created_at)}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
+                  </Flex>
+                  <Flex direction="column" gap="1" mt="2">
+                    <Heading size="3">{fav.title}</Heading>
+                    <Text size="4" weight="bold">{formatPrice(fav.price_cents)}</Text>
+                    <Text size="2" color="gray">{fav.seller_name}</Text>
+                  </Flex>
+                </Card>
+              </Link>
+            ))}
+          </Grid>
 
           {totalPages > 1 && (
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
