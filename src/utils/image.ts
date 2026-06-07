@@ -5,16 +5,19 @@ const INTERNAL_HOSTS = ["minio", "storage"]
 export function getImageUrl(url: string): string {
   if (!url) return url
 
-  if (url.startsWith("/")) {
-    return `${BASE}${url}`
-  }
-
-  if (INTERNAL_HOSTS.some((h) => url.startsWith(`http://${h}/`) || url.startsWith(`https://${h}/`))) {
-    const pathStart = url.indexOf("/", url.indexOf("://") + 3)
-    if (pathStart !== -1) {
-      return `${BASE}${url.slice(pathStart)}`
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    if (INTERNAL_HOSTS.some((h) => url.startsWith(`http://${h}/`) || url.startsWith(`https://${h}/`))) {
+      const pathStart = url.indexOf("/", url.indexOf("://") + 3)
+      if (pathStart !== -1) {
+        return `${BASE}${url.slice(pathStart)}`
+      }
     }
+    return url
   }
 
-  return url
+  if (url.startsWith("data:") || url.startsWith("blob:")) {
+    return url
+  }
+
+  return `${BASE}/${url}`
 }
