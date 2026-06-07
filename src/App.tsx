@@ -4,6 +4,7 @@ import RequireAuth from "./components/RequireAuth"
 import Layout from "./components/Layout"
 import RegisterPage from "./pages/auth/RegisterPage"
 import LoginPage from "./pages/auth/LoginPage"
+import ProfilePage from "./pages/auth/ProfilePage"
 import DashboardPage from "./pages/DashboardPage"
 import CreateListingPage from "./pages/listings/CreateListingPage"
 import EditListingPage from "./pages/listings/EditListingPage"
@@ -34,6 +35,7 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/listings/mine" element={<MyListingsPage />} />
             <Route path="/listings/new" element={<CreateListingPage />} />

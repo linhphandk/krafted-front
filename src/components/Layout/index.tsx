@@ -54,7 +54,7 @@ export default function Layout() {
             </Button>
           </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
-              <DropdownMenu.Item onClick={() => navigate(`/users/${user?.id}`)} style={itemStyle}>
+              <DropdownMenu.Item onClick={() => navigate("/profile")} style={itemStyle}>
                 Profile
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
