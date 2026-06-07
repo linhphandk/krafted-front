@@ -295,7 +295,7 @@ export const getMeUrl = () => {
 
 
 
-  return `/api/auth/me`
+  return `/auth/me`
 }
 
 export const me = async ( options?: RequestInit): Promise<UserResponse> => {
@@ -315,7 +315,7 @@ export const me = async ( options?: RequestInit): Promise<UserResponse> => {
 
 export const getMeQueryKey = () => {
     return [
-    `/api/auth/me`
+    `/auth/me`
     ] as const;
     }
 
@@ -390,7 +390,7 @@ export const getUpdateProfileUrl = () => {
 
 
 
-  return `/api/auth/me`
+  return `/auth/me`
 }
 
 export const updateProfile = async (updateProfileRequest: UpdateProfileRequest, options?: RequestInit): Promise<UserResponse> => {
