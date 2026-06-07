@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react"
-import { keepPreviousData, useQueries } from "@tanstack/react-query"
+import { useState } from "react"
+import { keepPreviousData } from "@tanstack/react-query"
 import { Flex, Grid, Heading, Spinner, Callout } from "@radix-ui/themes"
-import { useListListings, useListCategories, listImages } from "@/api/generated"
+import { useListListings, useListCategories } from "@/api/generated"
 import type { ListListingsParams } from "@/api/generated"
 import ListingCard from "@/components/ListingCard"
 import ListingsFilter from "@/components/ListingsFilter"
@@ -13,28 +13,6 @@ const ListingsPage = () => {
     query: { placeholderData: keepPreviousData },
   })
   const { data: categories } = useListCategories()
-
-  const listings = listingsData?.items || []
-  const totalPages = listingsData?.total_pages || 1
-
-  const imageQueries = useQueries({
-    queries: listings.map((listing) => ({
-      queryKey: ["listings", listing.id, "images"],
-      queryFn: () => listImages(listing.id),
-      staleTime: 5 * 60 * 1000,
-    })),
-  })
-
-  const imagesByListingId = useMemo(() => {
-    const map = new Map<string, { url: string }[]>()
-    listings.forEach((listing, i) => {
-      const data = imageQueries[i]?.data
-      if (data) {
-        map.set(listing.id, data.map((img) => ({ url: img.url })))
-      }
-    })
-    return map
-  }, [listings, imageQueries])
 
   if (!listingsData && isFetching) {
     return (
@@ -53,6 +31,9 @@ const ListingsPage = () => {
       </Flex>
     )
   }
+
+  const listings = listingsData?.items || []
+  const totalPages = listingsData?.total_pages || 1
 
   return (
     <Flex direction="column" gap="4">
@@ -74,10 +55,7 @@ const ListingsPage = () => {
         <>
           <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
             {listings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={{ ...listing, images: imagesByListingId.get(listing.id) }}
-              />
+              <ListingCard key={listing.id} listing={listing} />
             ))}
           </Grid>
 

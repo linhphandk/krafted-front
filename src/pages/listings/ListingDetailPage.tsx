@@ -2,7 +2,6 @@ import { useParams, Link, useNavigate } from "react-router"
 import { Button, Card, Flex, Heading, Text, Badge, Spinner, Callout } from "@radix-ui/themes"
 import { useGetListing } from "@/api/generated"
 import { useAuth } from "@/context"
-import { getImageUrl } from "@/utils/image"
 
 const CONDITION_COLORS: Record<string, "purple" | "green" | "orange" | "blue"> = {
   Handmade: "purple",
@@ -65,7 +64,7 @@ const ListingDetailPage = () => {
           {listing.images.map((img) => (
             <img
               key={img.id}
-              src={getImageUrl(img.url)}
+              src={img.url}
               alt={listing.title}
               style={{ width: 200, height: 200, objectFit: "cover", borderRadius: "var(--radius-2)" }}
             />
