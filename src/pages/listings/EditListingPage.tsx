@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useParams, useNavigate } from "react-router"
 import { useForm, Controller } from "react-hook-form"
 import {
+  Badge,
   Box,
   Card,
   TextField,
@@ -24,6 +25,19 @@ const CONDITIONS = [
   { value: "Refurbished", label: "Refurbished" },
 ] as const
 
+const STATUS_BADGE_COLORS: Record<string, "gray" | "green" | "amber" | "red"> = {
+  Draft: "gray",
+  Active: "green",
+  Paused: "amber",
+  Closed: "red",
+}
+
+const STATUS_OPTIONS = [
+  { value: "Draft", label: "Draft" },
+  { value: "Active", label: "Active" },
+  { value: "Paused", label: "Paused" },
+] as const
+
 interface EditListingFormData {
   title: string
   description: string
@@ -31,6 +45,7 @@ interface EditListingFormData {
   category_id: string
   condition: string
   quantity: string
+  status: string
 }
 
 const EditListingPage = () => {
@@ -48,7 +63,18 @@ const EditListingPage = () => {
     reset,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<EditListingFormData>({ mode: "onChange" })
+  } = useForm<EditListingFormData>({
+    mode: "onChange",
+    defaultValues: {
+      title: "",
+      description: "",
+      price: "",
+      category_id: "",
+      condition: "",
+      quantity: "1",
+      status: "",
+    },
+  })
 
   useEffect(() => {
     if (!listing) return
@@ -59,6 +85,7 @@ const EditListingPage = () => {
       category_id: listing.category_id,
       condition: listing.condition,
       quantity: String(listing.quantity),
+      status: listing.status,
     })
   }, [listing, reset])
 
@@ -71,6 +98,7 @@ const EditListingPage = () => {
         category_id: data.category_id,
         condition: data.condition,
         quantity: parseInt(data.quantity, 10),
+        status: data.status,
       }
       await updateListing.mutateAsync({ id: id!, data: payload })
       navigate(`/listings/${id}`)
@@ -105,7 +133,12 @@ const EditListingPage = () => {
     <Flex justify="center">
       <Card size="2" style={{ width: 560 }}>
         <Flex direction="column" gap="4" p="4">
-          <Heading size="5">Edit listing</Heading>
+          <Flex align="center" gap="2">
+            <Heading size="5">Edit listing</Heading>
+            <Badge size="1" color={STATUS_BADGE_COLORS[listing.status] || "gray"}>
+              {listing.status}
+            </Badge>
+          </Flex>
 
           {serverError && (
             <Callout.Root color="red" size="1">
@@ -202,6 +235,26 @@ const EditListingPage = () => {
                   />
                 </Box>
               </Flex>
+
+              <Controller
+                name="status"
+                control={control}
+                rules={{ required: "Status is required" }}
+                render={({ field }) => (
+                  <FormField label="Status" error={errors.status?.message}>
+                    <Select.Root value={field.value} onValueChange={field.onChange}>
+                      <Select.Trigger placeholder="Select status" />
+                      <Select.Content>
+                        {STATUS_OPTIONS.map((s) => (
+                          <Select.Item key={s.value} value={s.value}>
+                            {s.label}
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Root>
+                  </FormField>
+                )}
+              />
 
               <Flex gap="3" justify="end">
                 <Button variant="soft" onClick={() => navigate(-1)}>
