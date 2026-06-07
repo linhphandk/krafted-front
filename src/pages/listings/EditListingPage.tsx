@@ -8,6 +8,7 @@ import {
   TextField,
   TextArea,
   Button,
+  Text,
   Flex,
   Heading,
   Callout,
