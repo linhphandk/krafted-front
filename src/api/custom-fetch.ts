@@ -1,5 +1,5 @@
 import { getAccessToken, clearTokens, getUserId } from "@/utils/token"
-import { ensureValidToken, refreshAccessToken } from "./auth-interceptor"
+import { ensureValidToken } from "./auth-interceptor"
 
 const BASE_URL = import.meta.env.VITE_API_URL || ""
 
@@ -41,7 +41,7 @@ export const customFetch = async <T>(url: string, options?: RequestInit): Promis
   const response = await fetch(fullUrl, { ...options, headers })
 
   if (response.status === 401 && accessToken) {
-    const refreshed = await refreshAccessToken()
+    const refreshed = await ensureValidToken()
     if (refreshed) {
       const newToken = getAccessToken()!
       headers["Authorization"] = `Bearer ${newToken}`
