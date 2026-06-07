@@ -11,6 +11,7 @@ import EditListingPage from "./pages/listings/EditListingPage"
 import MyListingsPage from "./pages/listings/MyListingsPage"
 import ListingDetailPage from "./pages/listings/ListingDetailPage"
 import ListingsPage from "./pages/listings/ListingsPage"
+import FavoritesPage from "./pages/FavoritesPage"
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           >
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/listings/mine" element={<MyListingsPage />} />
             <Route path="/listings/new" element={<CreateListingPage />} />

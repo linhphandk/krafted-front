@@ -42,6 +42,16 @@ export const ListingCondition = {
   Refurbished: 'Refurbished',
 } as const;
 
+export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
+
+
+export const ListingStatus = {
+  Draft: 'Draft',
+  Active: 'Active',
+  Paused: 'Paused',
+  Closed: 'Closed',
+} as const;
+
 export interface CreateListingRequest {
   category_id: string;
   condition: ListingCondition;
@@ -49,11 +59,18 @@ export interface CreateListingRequest {
   price_cents: number;
   /** @nullable */
   quantity?: number | null;
+  status?: null | ListingStatus;
   title: string;
 }
 
 export interface ErrorResponse {
   message: string;
+}
+
+export interface FavoriteResponse {
+  created_at: string;
+  id: string;
+  listing_id: string;
 }
 
 export interface ImageResponse {
@@ -73,6 +90,7 @@ export interface ListingResponse {
   created_at: string;
   description: string;
   id: string;
+  images: ImageResponse[];
   price_cents: number;
   quantity: number;
   seller_id: string;
@@ -81,7 +99,6 @@ export interface ListingResponse {
   status: string;
   title: string;
   updated_at: string;
-  images?: ImageResponse[];
 }
 
 export type ListingSort = typeof ListingSort[keyof typeof ListingSort];
@@ -91,16 +108,6 @@ export const ListingSort = {
   newest: 'newest',
   price_asc: 'price_asc',
   price_desc: 'price_desc',
-} as const;
-
-export type ListingStatus = typeof ListingStatus[keyof typeof ListingStatus];
-
-
-export const ListingStatus = {
-  Draft: 'Draft',
-  Active: 'Active',
-  Paused: 'Paused',
-  Closed: 'Closed',
 } as const;
 
 export interface LoginRequest {
@@ -126,6 +133,20 @@ export interface LogoutRequest {
   refresh_token: string;
 }
 
+export type PaginatedResponseFavoriteResponseItemsItem = {
+  created_at: string;
+  id: string;
+  listing_id: string;
+};
+
+export interface PaginatedResponseFavoriteResponse {
+  items: PaginatedResponseFavoriteResponseItemsItem[];
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+}
+
 export type PaginatedResponseListingResponseItemsItem = {
   category_id: string;
   /** @nullable */
@@ -134,6 +155,7 @@ export type PaginatedResponseListingResponseItemsItem = {
   created_at: string;
   description: string;
   id: string;
+  images: ImageResponse[];
   price_cents: number;
   quantity: number;
   seller_id: string;
@@ -142,7 +164,6 @@ export type PaginatedResponseListingResponseItemsItem = {
   status: string;
   title: string;
   updated_at: string;
-  images?: ImageResponse[];
 };
 
 export interface PaginatedResponseListingResponse {
@@ -210,6 +231,17 @@ export type ListCategoriesParams = {
  * Filter by kind (craft, supply)
  */
 kind?: string;
+};
+
+export type ListFavoritesParams = {
+/**
+ * Page number
+ */
+page?: number;
+/**
+ * Items per page
+ */
+per_page?: number;
 };
 
 export type ListListingsParams = {
@@ -518,6 +550,236 @@ export function useListCategories<TData = Awaited<ReturnType<typeof listCategori
 
 
 
+
+export const getListFavoritesUrl = (params?: ListFavoritesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/favorites?${stringifiedParams}` : `/api/favorites`
+}
+
+export const listFavorites = async (params?: ListFavoritesParams, options?: RequestInit): Promise<PaginatedResponseFavoriteResponse> => {
+
+  return customFetch<PaginatedResponseFavoriteResponse>(getListFavoritesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFavoritesQueryKey = (params?: ListFavoritesParams,) => {
+    return [
+    `/api/favorites`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListFavoritesQueryOptions = <TData = Awaited<ReturnType<typeof listFavorites>>, TError = void>(params?: ListFavoritesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFavoritesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFavorites>>> = ({ signal }) => listFavorites(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListFavoritesQueryResult = NonNullable<Awaited<ReturnType<typeof listFavorites>>>
+export type ListFavoritesQueryError = void
+
+
+export function useListFavorites<TData = Awaited<ReturnType<typeof listFavorites>>, TError = void>(
+ params: undefined |  ListFavoritesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof listFavorites>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListFavorites<TData = Awaited<ReturnType<typeof listFavorites>>, TError = void>(
+ params?: ListFavoritesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof listFavorites>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListFavorites<TData = Awaited<ReturnType<typeof listFavorites>>, TError = void>(
+ params?: ListFavoritesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListFavorites<TData = Awaited<ReturnType<typeof listFavorites>>, TError = void>(
+ params?: ListFavoritesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFavorites>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListFavoritesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getAddFavoriteUrl = (listingId: string,) => {
+
+
+
+
+  return `/api/favorites/${listingId}`
+}
+
+export const addFavorite = async (listingId: string, options?: RequestInit): Promise<FavoriteResponse> => {
+
+  return customFetch<FavoriteResponse>(getAddFavoriteUrl(listingId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getAddFavoriteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addFavorite>>, TError,{listingId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addFavorite>>, TError,{listingId: string}, TContext> => {
+
+const mutationKey = ['addFavorite'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addFavorite>>, {listingId: string}> = (props) => {
+          const {listingId} = props ?? {};
+
+          return  addFavorite(listingId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddFavoriteMutationResult = NonNullable<Awaited<ReturnType<typeof addFavorite>>>
+
+    export type AddFavoriteMutationError = void
+
+    export const useAddFavorite = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addFavorite>>, TError,{listingId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addFavorite>>,
+        TError,
+        {listingId: string},
+        TContext
+      > => {
+      return useMutation(getAddFavoriteMutationOptions(options), queryClient);
+    }
+
+export const getRemoveFavoriteUrl = (listingId: string,) => {
+
+
+
+
+  return `/api/favorites/${listingId}`
+}
+
+export const removeFavorite = async (listingId: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getRemoveFavoriteUrl(listingId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getRemoveFavoriteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFavorite>>, TError,{listingId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeFavorite>>, TError,{listingId: string}, TContext> => {
+
+const mutationKey = ['removeFavorite'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeFavorite>>, {listingId: string}> = (props) => {
+          const {listingId} = props ?? {};
+
+          return  removeFavorite(listingId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveFavoriteMutationResult = NonNullable<Awaited<ReturnType<typeof removeFavorite>>>
+
+    export type RemoveFavoriteMutationError = void
+
+    export const useRemoveFavorite = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFavorite>>, TError,{listingId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof removeFavorite>>,
+        TError,
+        {listingId: string},
+        TContext
+      > => {
+      return useMutation(getRemoveFavoriteMutationOptions(options), queryClient);
+    }
 
 export const getListListingsUrl = (params?: ListListingsParams,) => {
   const normalizedParams = new URLSearchParams();
