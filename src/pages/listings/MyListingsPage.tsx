@@ -19,6 +19,7 @@ import {
   useDeleteListing,
   getSellerListingsQueryKey,
 } from "@/api/generated"
+import { getImageUrl } from "@/utils/image"
 import type { SellerListingsParams } from "@/api/generated"
 import Pagination from "@/components/Pagination"
 
@@ -176,7 +177,7 @@ const MyListingsPage = () => {
                   <Table.Cell>
                     {listing.images && listing.images.length > 0 ? (
                       <img
-                        src={listing.images[0].thumbnail_url || listing.images[0].url}
+                        src={getImageUrl(listing.images[0].thumbnail_url || listing.images[0].url)}
                         alt=""
                         style={{ width: 40, height: 40, objectFit: "cover", borderRadius: "var(--radius-2)" }}
                       />
