@@ -16,7 +16,8 @@ import {
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
 import { useCreateListing, useListCategories, uploadImages } from "@/api/generated"
-import { CreateListingRequest, ListingStatus } from "@/api/generated"
+import type { CreateListingRequest } from "@/api/generated"
+import { ListingStatus } from "@/api/generated"
 
 const CONDITIONS = [
   { value: "Handmade", label: "Handmade" },
