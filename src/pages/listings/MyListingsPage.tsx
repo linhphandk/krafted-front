@@ -50,7 +50,7 @@ const MyListingsPage = () => {
   const params = {
     page,
     per_page: 12,
-    ...(statusFilter !== "All" ? { status: statusFilter } : {}),
+    ...(statusFilter !== "All" ? { status: statusFilter.toLowerCase() } : {}),
   } as SellerListingsParams & { status?: string }
 
   const { data, isFetching, isError } = useSellerListings(params, {
@@ -192,24 +192,24 @@ const MyListingsPage = () => {
                   <Table.Cell>{formatPrice(listing.price_cents)}</Table.Cell>
                   <Table.Cell>
                     <Badge size="1" color={STATUS_BADGE_COLORS[listing.status] || "gray"}>
-                      {listing.status}
+                      {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
                     </Badge>
                   </Table.Cell>
                   <Table.Cell>{listing.quantity}</Table.Cell>
                   <Table.Cell>{formatDate(listing.created_at)}</Table.Cell>
                   <Table.Cell>
                     <Flex gap="2">
-                      {listing.status === "Draft" && (
+                      {listing.status === "draft" && (
                         <Button size="1" variant="soft" onClick={() => handlePublish(listing.id)}>
                           Publish
                         </Button>
                       )}
-                      {listing.status === "Active" && (
+                      {listing.status === "active" && (
                         <Button size="1" variant="soft" onClick={() => handlePause(listing.id)}>
                           Pause
                         </Button>
                       )}
-                      {listing.status === "Paused" && (
+                      {listing.status === "paused" && (
                         <Button size="1" variant="soft" onClick={() => handlePublish(listing.id)}>
                           Publish
                         </Button>
