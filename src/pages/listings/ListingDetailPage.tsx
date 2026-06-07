@@ -1,9 +1,8 @@
 import { useState } from "react"
 import { useParams, Link, useNavigate } from "react-router"
 import { Button, Card, Flex, Heading, Text, Badge, Spinner, Callout } from "@radix-ui/themes"
-import { useGetListing, useAddFavorite, useRemoveFavorite, getListFavoritesQueryKey } from "@/api/generated"
+import { useGetListing, useAddFavorite, useRemoveFavorite } from "@/api/generated"
 import { useAuth } from "@/context"
-import { useQueryClient } from "@tanstack/react-query"
 
 const CONDITION_COLORS: Record<string, "purple" | "green" | "orange" | "blue"> = {
   Handmade: "purple",
@@ -19,18 +18,13 @@ function formatPrice(cents: number): string {
 const ListingDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { user } = useAuth()
   const { data: listing, isLoading } = useGetListing(id!)
   const isOwner = user?.id === listing?.seller_id
   const [isFavorited, setIsFavorited] = useState(false)
 
-  const addFav = useAddFavorite({
-    mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey() }) },
-  })
-  const removeFav = useRemoveFavorite({
-    mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListFavoritesQueryKey() }) },
-  })
+  const addFav = useAddFavorite()
+  const removeFav = useRemoveFavorite()
 
   async function toggleFavorite() {
     if (isFavorited) {
