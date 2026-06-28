@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
 import { useCreateListing, usePublishListing, useListCategories, uploadImages } from "@/api/generated"
-import type { CreateListingRequest } from "@/api/generated"
+import type { CreateListingRequest, ListingCondition } from "@/api/generated"
 
 const CONDITIONS = [
   { value: "Handmade", label: "Handmade" },
@@ -30,7 +30,7 @@ interface CreateListingFormData {
   description: string
   price: string
   category_id: string
-  condition: string
+  condition: CreateListingRequest["condition"]
   quantity: string
   is_active: boolean
 }
@@ -52,7 +52,7 @@ const CreateListingPage = () => {
     setError,
   } = useForm<CreateListingFormData>({
     mode: "onChange",
-    defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "" },
+    defaultValues: { quantity: "1", is_active: false, category_id: "", condition: "New", price: "", description: "", title: "" },
   })
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -76,7 +76,7 @@ const CreateListingPage = () => {
         description: data.description,
         price_cents: Math.round(parseFloat(data.price) * 100),
         category_id: data.category_id,
-        condition: data.condition,
+        condition: data.condition as ListingCondition,
         quantity: parseInt(data.quantity, 10),
       }
       const listing = await createListing.mutateAsync({ data: payload })
