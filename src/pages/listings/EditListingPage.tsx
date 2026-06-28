@@ -8,7 +8,6 @@ import {
   TextField,
   TextArea,
   Button,
-  Text,
   Flex,
   Heading,
   Callout,
@@ -17,7 +16,7 @@ import {
 } from "@radix-ui/themes"
 import FormField from "@/components/FormField"
 import { useGetListing, useUpdateListing, useListCategories, uploadImages, deleteImage } from "@/api/generated"
-import type { UpdateListingRequest } from "@/api/generated"
+import type { ListingCondition, ListingStatus, UpdateListingRequest } from "@/api/generated"
 
 const CONDITIONS = [
   { value: "Handmade", label: "Handmade" },
@@ -44,9 +43,9 @@ interface EditListingFormData {
   description: string
   price: string
   category_id: string
-  condition: string
+  condition: UpdateListingRequest["condition"],
   quantity: string
-  status: string
+  status: UpdateListingRequest["status"],
 }
 
 const EditListingPage = () => {
@@ -74,9 +73,9 @@ const EditListingPage = () => {
       description: "",
       price: "",
       category_id: "",
-      condition: "",
+      condition: "New",
       quantity: "1",
-      status: "",
+      status: "Draft",
     },
   })
 
@@ -110,9 +109,9 @@ const EditListingPage = () => {
       description: listing.description,
       price: (listing.price_cents / 100).toFixed(2),
       category_id: listing.category_id,
-      condition: listing.condition,
+      condition: listing.condition as ListingCondition,
       quantity: String(listing.quantity),
-      status: listing.status,
+      status: listing.status as ListingStatus,
     })
   }, [listing, reset])
 
@@ -123,9 +122,9 @@ const EditListingPage = () => {
         description: data.description,
         price_cents: Math.round(parseFloat(data.price) * 100),
         category_id: data.category_id,
-        condition: data.condition,
+        condition: data.condition as ListingCondition,
         quantity: parseInt(data.quantity, 10),
-        status: data.status,
+        status: data.status as ListingStatus,
       }
       await updateListing.mutateAsync({ id: id!, data: payload })
 

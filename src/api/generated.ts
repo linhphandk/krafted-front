@@ -76,8 +76,12 @@ export interface FavoriteResponse {
   price_cents: number;
   seller_id: string;
   seller_name: string;
-  status: string;
+  status: ListingStatus;
   title: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
 }
 
 export interface ImageResponse {
@@ -93,7 +97,7 @@ export interface ListingResponse {
   category_id: string;
   /** @nullable */
   category_name?: string | null;
-  condition: string;
+  condition: ListingCondition;
   created_at: string;
   description: string;
   id: string;
@@ -103,7 +107,7 @@ export interface ListingResponse {
   seller_id: string;
   /** @nullable */
   seller_name?: string | null;
-  status: string;
+  status: ListingStatus;
   title: string;
   updated_at: string;
 }
@@ -149,7 +153,7 @@ export type PaginatedResponseFavoriteResponseItemsItem = {
   price_cents: number;
   seller_id: string;
   seller_name: string;
-  status: string;
+  status: ListingStatus;
   title: string;
 };
 
@@ -165,7 +169,7 @@ export type PaginatedResponseListingResponseItemsItem = {
   category_id: string;
   /** @nullable */
   category_name?: string | null;
-  condition: string;
+  condition: ListingCondition;
   created_at: string;
   description: string;
   id: string;
@@ -175,7 +179,7 @@ export type PaginatedResponseListingResponseItemsItem = {
   seller_id: string;
   /** @nullable */
   seller_name?: string | null;
-  status: string;
+  status: ListingStatus;
   title: string;
   updated_at: string;
 };
@@ -216,6 +220,11 @@ export interface RegisterResponse {
 
 export interface ReorderImagesRequest {
   image_ids: string[];
+}
+
+export interface ResetPasswordRequest {
+  password: string;
+  token: string;
 }
 
 export interface UpdateListingRequest {
@@ -1546,6 +1555,70 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getPublishListingMutationOptions(options), queryClient);
     }
 
+export const getForgotPasswordUrl = () => {
+
+
+
+
+  return `/auth/forgot-password`
+}
+
+export const forgotPassword = async (forgotPasswordRequest: ForgotPasswordRequest, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getForgotPasswordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(forgotPasswordRequest)
+  }
+);}
+
+
+
+
+export const getForgotPasswordMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof forgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof forgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext> => {
+
+const mutationKey = ['forgotPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof forgotPassword>>, {data: ForgotPasswordRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  forgotPassword(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof forgotPassword>>>
+    export type ForgotPasswordMutationBody = ForgotPasswordRequest
+    export type ForgotPasswordMutationError = ErrorResponse
+
+    export const useForgotPassword = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof forgotPassword>>, TError,{data: ForgotPasswordRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof forgotPassword>>,
+        TError,
+        {data: ForgotPasswordRequest},
+        TContext
+      > => {
+      return useMutation(getForgotPasswordMutationOptions(options), queryClient);
+    }
+
 export const getLoginUrl = () => {
 
 
@@ -1959,4 +2032,68 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getRegisterMutationOptions(options), queryClient);
+    }
+
+export const getResetPasswordUrl = () => {
+
+
+
+
+  return `/auth/reset-password`
+}
+
+export const resetPassword = async (resetPasswordRequest: ResetPasswordRequest, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getResetPasswordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(resetPasswordRequest)
+  }
+);}
+
+
+
+
+export const getResetPasswordMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetPassword>>, TError,{data: ResetPasswordRequest}, TContext> => {
+
+const mutationKey = ['resetPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetPassword>>, {data: ResetPasswordRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  resetPassword(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof resetPassword>>>
+    export type ResetPasswordMutationBody = ResetPasswordRequest
+    export type ResetPasswordMutationError = ErrorResponse
+
+    export const useResetPassword = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetPassword>>, TError,{data: ResetPasswordRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resetPassword>>,
+        TError,
+        {data: ResetPasswordRequest},
+        TContext
+      > => {
+      return useMutation(getResetPasswordMutationOptions(options), queryClient);
     }

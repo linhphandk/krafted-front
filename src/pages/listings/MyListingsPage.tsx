@@ -192,24 +192,24 @@ const MyListingsPage = () => {
                   <Table.Cell>{formatPrice(listing.price_cents)}</Table.Cell>
                   <Table.Cell>
                     <Badge size="1" color={STATUS_BADGE_COLORS[listing.status] || "gray"}>
-                      {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
+                      {listing.status}
                     </Badge>
                   </Table.Cell>
                   <Table.Cell>{listing.quantity}</Table.Cell>
                   <Table.Cell>{formatDate(listing.created_at)}</Table.Cell>
                   <Table.Cell>
                     <Flex gap="2">
-                      {listing.status === "draft" && (
+                      {listing.status === "Draft" && (
                         <Button size="1" variant="soft" onClick={() => handlePublish(listing.id)}>
                           Publish
                         </Button>
                       )}
-                      {listing.status === "active" && (
+                      {listing.status === "Active" && (
                         <Button size="1" variant="soft" onClick={() => handlePause(listing.id)}>
                           Pause
                         </Button>
                       )}
-                      {listing.status === "paused" && (
+                      {listing.status === "Paused" && (
                         <Button size="1" variant="soft" onClick={() => handlePublish(listing.id)}>
                           Publish
                         </Button>
